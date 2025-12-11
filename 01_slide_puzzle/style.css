@@ -1,0 +1,539 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+}
+
+body {
+    background-color: #051A0F;
+    color: #63B35A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(12, 115, 72, 0.1) 2px,
+            rgba(12, 115, 72, 0.1) 4px
+        );
+    position: relative;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+h1 {
+    color: #63B35A;
+    font-size: 2.8rem;
+    margin-bottom: 5px;
+    text-shadow: 
+        0 0 10px #63B35A,
+        0 0 20px #0C7348,
+        2px 2px 0 #051A0F;
+    letter-spacing: 3px;
+    position: relative;
+    text-transform: uppercase;
+}
+
+.glitch {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 #2E8B57;
+    animation: glitch-1 2s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: 2px 0 #1E5C3F;
+    animation: glitch-2 3s infinite linear alternate-reverse;
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch-1 {
+    0% { clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%); }
+    100% { clip-path: polygon(0 10%, 100% 10%, 100% 45%, 0 45%); }
+}
+
+@keyframes glitch-2 {
+    0% { clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%); }
+    100% { clip-path: polygon(0 75%, 100% 75%, 100% 100%, 0 100%); }
+}
+
+.subtitle {
+    color: #8BC34A;
+    font-style: italic;
+    font-size: 1.2rem;
+    text-shadow: 0 0 5px #8BC34A;
+    letter-spacing: 2px;
+}
+
+.game-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    max-width: 600px;
+    background-color: #0A2316;
+    padding: 20px;
+    border-radius: 0;
+    border: 2px solid #63B35A;
+    box-shadow: 
+        0 0 15px rgba(99, 179, 90, 0.5),
+        inset 0 0 10px rgba(5, 26, 15, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(99, 179, 90, 0.2),
+        transparent
+    );
+    animation: scanline 3s linear infinite;
+}
+
+@keyframes scanline {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.steps-counter, .timer-counter {
+    background-color: #0C2E1D;
+    padding: 15px 25px;
+    border-radius: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #8BC34A;
+    text-align: center;
+    border: 1px solid #63B35A;
+    box-shadow: 
+        inset 0 0 10px rgba(5, 26, 15, 0.8),
+        0 0 10px rgba(99, 179, 90, 0.3);
+    min-width: 160px;
+}
+
+.steps-label, .timer-label {
+    font-size: 1rem;
+    color: #63B35A;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.steps-number, .timer-number {
+    font-size: 2.5rem;
+    color: #63B35A;
+    text-shadow: 0 0 10px #63B35A;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.puzzle-container {
+    width: 500px;
+    height: 500px;
+    position: relative;
+    margin: 0 auto;
+    background-color: #051A0F;
+    border-radius: 0;
+    overflow: hidden;
+    border: 3px solid #63B35A;
+    box-shadow: 
+        0 0 30px rgba(99, 179, 90, 0.7),
+        inset 0 0 30px rgba(5, 26, 15, 0.8);
+}
+
+.puzzle-board {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.puzzle-piece {
+    width: 100%;
+    height: 100%;
+    background-size: 500px 500px;
+    border: 1px solid #0C2E1D;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.puzzle-piece:hover {
+    transform: scale(1.02);
+    z-index: 2;
+    box-shadow: 
+        0 0 15px #63B35A,
+        inset 0 0 10px rgba(99, 179, 90, 0.3);
+    border-color: #63B35A;
+}
+
+.puzzle-piece.selected {
+    box-shadow: 
+        0 0 25px #8BC34A,
+        inset 0 0 15px rgba(139, 195, 74, 0.5);
+    transform: scale(1.03);
+    z-index: 3;
+    border-color: #8BC34A;
+}
+
+.matrix-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(99, 179, 90, 0.05),
+            rgba(99, 179, 90, 0.05) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(99, 179, 90, 0.03),
+            rgba(99, 179, 90, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.7;
+}
+
+.game-instructions {
+    background-color: #0A2316;
+    padding: 15px;
+    border-radius: 0;
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #63B35A;
+    box-shadow: 
+        0 0 10px rgba(99, 179, 90, 0.5),
+        inset 0 0 10px rgba(5, 26, 15, 0.5);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-instructions p {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.restart-hint {
+    color: #8BC34A;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+#selected-piece-info {
+    color: #63B35A;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-shadow: 0 0 5px #63B35A;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.instructions {
+    background-color: #0A2316;
+    padding: 20px;
+    border-radius: 0;
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #63B35A;
+    box-shadow: 
+        0 0 10px rgba(99, 179, 90, 0.5),
+        inset 0 0 10px rgba(5, 26, 15, 0.5);
+    margin-top: 10px;
+    position: relative;
+}
+
+.instructions h3 {
+    color: #8BC34A;
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px #8BC34A;
+    border-bottom: 1px solid #63B35A;
+    padding-bottom: 10px;
+}
+
+.instructions p {
+    line-height: 1.6;
+    margin-bottom: 8px;
+    color: #A5D6A7;
+    font-size: 0.9rem;
+}
+
+.win-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(5, 26, 15, 0.97);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s;
+}
+
+.win-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.win-content {
+    background-color: #0A2316;
+    padding: 40px;
+    border-radius: 0;
+    text-align: center;
+    max-width: 500px;
+    border: 3px solid #63B35A;
+    box-shadow: 
+        0 0 40px rgba(99, 179, 90, 0.7),
+        inset 0 0 20px rgba(5, 26, 15, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+.win-content h2 {
+    color: #63B35A;
+    font-size: 2.8rem;
+    margin-bottom: 30px;
+    text-shadow: 
+        0 0 15px #63B35A,
+        0 0 30px #63B35A;
+    letter-spacing: 3px;
+}
+
+.win-stats {
+    background-color: #051A0F;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid #63B35A;
+}
+
+.stat-line {
+    color: #8BC34A;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.stat-line:last-child {
+    margin-bottom: 0;
+}
+
+.success {
+    color: #63B35A;
+    font-weight: bold;
+}
+
+#final-time {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(99, 179, 90, 0.05) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanlines 0.1s linear infinite;
+}
+
+@keyframes scanlines {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 4px; }
+}
+
+.matrix-noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-radial-gradient(
+            circle at 50% 50%,
+            rgba(99, 179, 90, 0.03),
+            rgba(99, 179, 90, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+    animation: matrix-static 0.1s infinite;
+}
+
+@keyframes matrix-static {
+    0% { background-position: 0 0; }
+    100% { background-position: 4px 4px; }
+}
+
+/* Кнопка в окне победы */
+#play-again-btn {
+    background-color: #0C2E1D;
+    color: #8BC34A;
+    border: 1px solid #63B35A;
+    padding: 12px 30px;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    display: block;
+    margin: 20px auto 0;
+}
+
+#play-again-btn:hover {
+    background-color: #0C7348;
+    color: #A5D6A7;
+    box-shadow: 
+        0 0 15px #63B35A,
+        inset 0 0 10px rgba(99, 179, 90, 0.3);
+    transform: translateY(-2px);
+}
+
+#play-again-btn:active {
+    transform: translateY(1px);
+    box-shadow: 
+        0 0 5px #63B35A,
+        inset 0 0 10px rgba(99, 179, 90, 0.5);
+}
+
+audio {
+    display: none;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 600px) {
+    .game-info {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .steps-counter, .timer-counter {
+        width: 100%;
+        max-width: 250px;
+    }
+    
+    .steps-number, .timer-number {
+        font-size: 2rem;
+    }
+    
+    .puzzle-container {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .puzzle-piece {
+        background-size: 300px 300px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .win-content h2 {
+        font-size: 2rem;
+    }
+    
+    .stat-line {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .steps-counter, .timer-counter {
+        padding: 12px 20px;
+    }
+    
+    .steps-number, .timer-number {
+        font-size: 1.8rem;
+    }
+    
+    .game-instructions p {
+        font-size: 0.9rem;
+    }
+    
+    .restart-hint {
+        font-size: 0.8rem;
+    }
+}
