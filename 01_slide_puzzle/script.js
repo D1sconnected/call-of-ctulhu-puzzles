@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         puzzleBoard.innerHTML = '';
         piecePositions = [];
         selectedPieceIndex = null;
-        selectedPieceInfo.textContent = 'SYSTEM READY...';
+        selectedPieceInfo.textContent = '█';
         
         // Initialize with pieces in correct order
         for (let i = 0; i < boardSize * boardSize; i++) {
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function shuffleOnInit() {
         // Clear any selection
         selectedPieceIndex = null;
-        selectedPieceInfo.textContent = 'SYSTEM READY...';
+        selectedPieceInfo.textContent = '█';
         
         // Play shuffle sound
         playSound(shuffleSound);
@@ -201,12 +201,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // If no piece is selected, select this position
         if (selectedPieceIndex === null) {
             selectedPieceIndex = position;
-            selectedPieceInfo.textContent = `NODE ${position + 1} SELECTED → CHOOSE ADJACENT`;
+            selectedPieceInfo.textContent = `NODE ${position + 1} SELECTED → CHOOSE ADJACENT █`;
         }
         // If same position is clicked again, deselect it
         else if (selectedPieceIndex === position) {
             selectedPieceIndex = null;
-            selectedPieceInfo.textContent = 'SYSTEM READY...';
+            selectedPieceInfo.textContent = '█';
         }
         // If a different position is clicked, check if adjacent and swap
         else {
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Clear selection
                 selectedPieceIndex = null;
-                selectedPieceInfo.textContent = 'SYSTEM READY...';
+                selectedPieceInfo.textContent = '█';
                 
                 // Increment steps
                 steps++;
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Pieces are not adjacent, select the new piece instead
                 selectedPieceIndex = position;
-                selectedPieceInfo.textContent = `NODE ${position + 1} SELECTED → CHOOSE ADJACENT`;
+                selectedPieceInfo.textContent = `NODE ${position + 1} SELECTED → CHOOSE ADJACENT █`;
                 updatePieceSelection();
             }
         }

@@ -1,7 +1,10 @@
-# Slide Puzzle
-A retro-styled 80s puzzle game with a green matrix aesthetic and atmospheric sound effects.
+# ≫ Slide Puzzle
+- A retro-styled 80s puzzle with a green matrix aesthetic and atmospheric sound effects.
+- Emulates terminal access on secret USSR science-base.
+- Vibe-coded with the help of AI, feel free to use and modify for your game sessions. 
 
-Vibe-coded with the help of AI, feel free to use and modify.
+# 🔎 Preview
+![preview](preview.gif)
 
 # ✨ Game Features
 
