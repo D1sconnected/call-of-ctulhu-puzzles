@@ -4,7 +4,7 @@ A collection of HTML-based interactive puzzles to enhance your Call of Cthulhu r
 
 # 🧩 Current Puzzles
 
-### ≫ Slide Puzzle
+### ≫ [Slide Puzzle ](./01_slide_puzzle/)
 *A retro-styled 9-piece sliding puzzle with green matrix aesthetic and atmospheric sound effects.*
 
 ![preview](01_slide_puzzle/preview.gif)
