@@ -10,7 +10,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <!-- Splash Screens -->
+    <div id="winScreen" class="splash-screen">
+        <div class="splash-content">
+            <h2>VICTORY!</h2>
+            <p>All barrels unlocked! The ancient mechanism yields to your skill.</p>
+            <button class="splash-btn" onclick="location.reload()">PLAY AGAIN</button>
+        </div>
+    </div>
+    
+    <div id="loseScreen" class="splash-screen">
+        <div class="splash-content">
+            <h2>DEFEAT!</h2>
+            <p>The mechanism remains locked... The whispers fade into silence.</p>
+            <button class="splash-btn" onclick="location.reload()">TRY AGAIN</button>
+        </div>
+    </div>
+    
+    <!-- Main Game -->
+    <div class="container" id="gameContainer">
         <header>
             <h1>CTHULHU LOCKPICKING</h1>
             <p class="subtitle">Unlock the ancient mechanism</p>
@@ -29,13 +47,6 @@
 
                     <!-- Lockpick visualization -->
                     <div class="lockpick-container">
-                        <div class="lockpick-header">
-                            <h3>LOCKPICK</h3>
-                            <div class="speed-indicator">
-                                <span>Speed:</span>
-                                <span id="speedValue">-</span>
-                            </div>
-                        </div>
                         <div class="lockpick-visual">
                             <div class="lockpick" id="lockpick"></div>
                             <div class="lockpick-target" id="targetZone"></div>
@@ -55,10 +66,6 @@
                             <h3>LOCKPICKS LEFT</h3>
                             <div class="status-value" id="lockpicksCount">10</div>
                         </div>
-                        <div class="status-card">
-                            <h3>UNLOCKED</h3>
-                            <div class="status-value" id="unlockedCount">0/5</div>
-                        </div>
                     </div>
 
                     <div class="controls">
@@ -72,37 +79,21 @@
                                 <span class="key">ENTER</span>
                                 <span class="desc">Fix lockpick at correct position</span>
                             </div>
-                            <div class="instruction">
-                                <span class="key">R</span>
-                                <span class="desc">Retry current barrel</span>
-                            </div>
-                        </div>
-                        
-                        <div class="game-buttons">
-                            <button id="startBtn" class="game-btn">START GAME</button>
-                            <button id="resetBtn" class="game-btn reset">RESET ALL</button>
                         </div>
 
                         <!-- Game rules -->
                         <div class="rules">
                             <h3>RULES</h3>
                             <ul>
-                                <li>Unlock all 5 barrels in sequence (1 to 5)</li>
-                                <li>Each failed attempt resets ALL barrels</li>
-                                <li>Lockpick speed is random each time</li>
-                                <li>Press ENTER when lockpick is in green zone</li>
-                                <li>Barrels auto-select as you progress</li>
+                                <li>Unlock all 5 barrels in sequence</li>
+                                <li>Failed ENTER attempt breaks 1 lockpick</li>
+                                <li>Missed timing (no ENTER) just resets barrel</li>
+                                <li>If lockpick breaks, ALL barrels reset</li>
+                                <li>Press W for each attempt</li>
+                                <li>Game resets on page refresh</li>
                             </ul>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Game messages -->
-            <div class="message-area">
-                <div id="gameMessage" class="message">
-                    <h3 id="messageTitle">Welcome</h3>
-                    <p id="messageText">Start game and unlock barrel 1. Press W to begin.</p>
                 </div>
             </div>
         </main>
@@ -111,6 +102,20 @@
             <p>Inspired by TES4 Oblivion & Call of Cthulhu</p>
         </footer>
     </div>
+
+    <!-- Audio elements for sounds -->
+    <audio id="soundLockpickMove" preload="auto">
+        <source src="sounds/move.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundLockpickFix" preload="auto">
+        <source src="sounds/fix.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundLockpickBreak" preload="auto">
+        <source src="sounds/break.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundBarrelUnlock" preload="auto">
+        <source src="sounds/unlock.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="script.js"></script>
 </body>

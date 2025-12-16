@@ -3,41 +3,45 @@ const gameState = {
     barrels: [],
     currentBarrel: 1,
     lockpicks: 10,
-    unlockedCount: 0,
-    isGameActive: false,
+    isGameActive: true,
     isLockpickMoving: false,
     currentSpeed: 0,
     lockpickPosition: 0,
     animationId: null,
-    speedVariants: [1.0, 1.5, 2.0, 2.5], // 4 speed variants
-    targetZoneWidth: 80, // Width of target zone in pixels (matches CSS width)
-    lockpickWidth: 8, // Width of lockpick in pixels (matches CSS width)
-    containerWidth: 0, // Will be set dynamically
-    resetOnFail: true
+    // SLOWER speeds: 0.8, 1.0, 1.3, 1.6 (was 1.0, 1.5, 2.0, 2.5)
+    speedVariants: [0.8, 1.0, 1.3, 1.6],
+    // SHORTER track: 80% (was 100%)
+    trackLength: 80,
+    // WIDER target zone: 15% tolerance (was 10%)
+    targetZoneHalfWidth: 7.5
 };
 
 // DOM elements
 const lockBarrels = document.getElementById('lockBarrels');
 const currentBarrelEl = document.getElementById('currentBarrel');
 const lockpicksCount = document.getElementById('lockpicksCount');
-const unlockedCount = document.getElementById('unlockedCount');
 const lockpickEl = document.getElementById('lockpick');
 const targetZone = document.getElementById('targetZone');
-const speedValue = document.getElementById('speedValue');
-const startBtn = document.getElementById('startBtn');
-const resetBtn = document.getElementById('resetBtn');
-const messageTitle = document.getElementById('messageTitle');
-const messageText = document.getElementById('messageText');
+const winScreen = document.getElementById('winScreen');
+const loseScreen = document.getElementById('loseScreen');
+const gameContainer = document.getElementById('gameContainer');
 
-// Initialize game
+// Audio elements
+const soundLockpickMove = document.getElementById('soundLockpickMove');
+const soundLockpickFix = document.getElementById('soundLockpickFix');
+const soundLockpickBreak = document.getElementById('soundLockpickBreak');
+const soundBarrelUnlock = document.getElementById('soundBarrelUnlock');
+
+// Initialize game on page load
 function initGame() {
     createBarrels();
     setupEventListeners();
-    calculateContainerWidth();
-    showMessage('Welcome', 'Press START GAME to begin. You must unlock barrels 1 through 5 in sequence.');
     
-    // Listen for window resize to recalculate container width
-    window.addEventListener('resize', calculateContainerWidth);
+    // Initialize target zone position for first barrel
+    const firstBarrel = gameState.barrels[0];
+    if (firstBarrel) {
+        updateTargetZonePosition(firstBarrel.targetPosition);
+    }
 }
 
 // Create 5 horizontal lock barrels
@@ -46,10 +50,11 @@ function createBarrels() {
     gameState.barrels = [];
     
     for (let i = 1; i <= 5; i++) {
+        // Generate random target position between 30% and 70% (not near edges)
         const barrel = {
             id: i,
             isUnlocked: false,
-            targetPosition: Math.random() * 60 + 20, // 20-80%
+            targetPosition: Math.random() * 40 + 30, // 30-70%
             currentProgress: 0,
             progressElement: null,
             targetElement: null,
@@ -93,41 +98,24 @@ function createBarrels() {
     updateCurrentBarrelVisual();
 }
 
-// Calculate container width for accurate positioning
-function calculateContainerWidth() {
-    const container = document.querySelector('.lockpick-visual');
-    if (container) {
-        gameState.containerWidth = container.offsetWidth;
-    }
-}
-
 // Set up event listeners
 function setupEventListeners() {
-    // Keyboard controls
+    // Keyboard controls only
     document.addEventListener('keydown', handleKeyPress);
-    
-    // Button controls
-    startBtn.addEventListener('click', startGame);
-    resetBtn.addEventListener('click', resetGame);
 }
 
 // Handle keyboard input
 function handleKeyPress(e) {
     if (!gameState.isGameActive) return;
     
-    // Start lockpick movement
-    if (e.key === 'w' || e.key === 'W') {
+    // Start lockpick movement - can always start if not already moving
+    if ((e.key === 'w' || e.key === 'W') && !gameState.isLockpickMoving) {
         startLockpick();
     }
     
-    // Fix lockpick position
-    if (e.key === 'Enter') {
+    // Fix lockpick position - only if lockpick is moving
+    if (e.key === 'Enter' && gameState.isLockpickMoving) {
         fixLockpick();
-    }
-    
-    // Retry current barrel
-    if (e.key === 'r' || e.key === 'R') {
-        retryBarrel();
     }
 }
 
@@ -147,6 +135,18 @@ function updateCurrentBarrelVisual() {
     }
 }
 
+// Play sound with volume control
+function playSound(sound, volume = 0.5) {
+    if (sound) {
+        sound.volume = volume;
+        sound.currentTime = 0;
+        sound.play().catch(e => {
+            // Silent fail for audio
+            console.log("Audio play failed (safe to ignore):", e);
+        });
+    }
+}
+
 // Start lockpick movement
 function startLockpick() {
     if (!gameState.isGameActive || gameState.isLockpickMoving) return;
@@ -154,21 +154,20 @@ function startLockpick() {
     const barrel = gameState.barrels[gameState.currentBarrel - 1];
     
     if (barrel.isUnlocked) {
-        showMessage('Already Unlocked', 'This barrel is already unlocked.');
-        return;
+        return; // Shouldn't happen with auto-selection
     }
     
     if (gameState.lockpicks <= 0) {
-        showMessage('No Lockpicks Left', 'Reset the game to get more lockpicks.');
+        showLoseScreen();
         return;
     }
+    
+    // Play lockpick movement sound
+    playSound(soundLockpickMove, 0.3);
     
     // Select random speed from variants
     const randomIndex = Math.floor(Math.random() * gameState.speedVariants.length);
     gameState.currentSpeed = gameState.speedVariants[randomIndex];
-    
-    // Update speed display
-    speedValue.textContent = `${gameState.currentSpeed.toFixed(1)}x`;
     
     // Start lockpick movement
     gameState.isLockpickMoving = true;
@@ -181,8 +180,6 @@ function startLockpick() {
     // Set target zone for current barrel
     updateTargetZonePosition(barrel.targetPosition);
     
-    showMessage('Lockpick Moving', 'Press ENTER when the lockpick aligns with the green zone.');
-    
     // Start movement animation
     moveLockpick();
 }
@@ -194,9 +191,18 @@ function moveLockpick() {
     // Update lockpick position
     gameState.lockpickPosition += gameState.currentSpeed;
     
-    // Reset to start when reaching 100%
-    if (gameState.lockpickPosition >= 100) {
-        gameState.lockpickPosition = 0;
+    // Check if reached the end (trackLength%)
+    if (gameState.lockpickPosition >= gameState.trackLength) {
+        gameState.lockpickPosition = gameState.trackLength;
+        
+        // Update visuals
+        lockpickEl.style.left = `${gameState.lockpickPosition}%`;
+        const barrel = gameState.barrels[gameState.currentBarrel - 1];
+        barrel.progressElement.style.width = `${gameState.lockpickPosition}%`;
+        
+        // Stop movement naturally (no lockpick break, no reset)
+        stopLockpickMovement(true);
+        return;
     }
     
     // Update lockpick visual position
@@ -216,34 +222,30 @@ function fixLockpick() {
     
     const barrel = gameState.barrels[gameState.currentBarrel - 1];
     
+    // Play lockpick fix sound
+    playSound(soundLockpickFix, 0.4);
+    
     // Calculate if lockpick is in the target zone
-    // We need to compare the lockpick position (as percentage) with the target zone
     const targetZonePercent = barrel.targetPosition;
     const lockpickPercent = gameState.lockpickPosition;
     
-    // Calculate tolerance in percentage (target zone width relative to container)
-    const tolerance = 12; // Increased tolerance for better detection
-    
-    const isInTargetZone = Math.abs(lockpickPercent - targetZonePercent) <= tolerance;
+    // Check if lockpick center is within target zone
+    const minTarget = targetZonePercent - gameState.targetZoneHalfWidth;
+    const maxTarget = targetZonePercent + gameState.targetZoneHalfWidth;
+    const isInTargetZone = lockpickPercent >= minTarget && lockpickPercent <= maxTarget;
     
     // Stop movement
-    stopLockpickMovement();
-    
-    // Use a lockpick
-    gameState.lockpicks--;
-    lockpicksCount.textContent = gameState.lockpicks;
+    stopLockpickMovement(false);
     
     if (isInTargetZone) {
-        // Success!
+        // SUCCESS - barrel unlocked!
+        playSound(soundBarrelUnlock, 0.5);
+        
         barrel.isUnlocked = true;
-        gameState.unlockedCount++;
         
         barrel.barrelElement.classList.remove('progressing', 'locked');
         barrel.barrelElement.classList.add('unlocked');
         barrel.barrelElement.querySelector('.barrel-status').textContent = 'UNLOCKED';
-        
-        // Update unlocked count
-        unlockedCount.textContent = `${gameState.unlockedCount}/5`;
         
         // Move to next barrel
         if (gameState.currentBarrel < 5) {
@@ -251,38 +253,34 @@ function fixLockpick() {
             currentBarrelEl.textContent = gameState.currentBarrel;
             updateCurrentBarrelVisual();
             
-            showMessage('Success!', `Barrel ${barrel.id} unlocked! Now working on barrel ${gameState.currentBarrel}.`);
+            // Update target zone for new barrel
+            const nextBarrel = gameState.barrels[gameState.currentBarrel - 1];
+            updateTargetZonePosition(nextBarrel.targetPosition);
         } else {
-            // All barrels unlocked
-            showMessage('Success!', `Barrel ${barrel.id} unlocked! All barrels are now open.`);
-        }
-        
-        // Check win condition
-        if (gameState.unlockedCount === 5) {
-            gameWin();
+            // All barrels unlocked - WIN!
+            showWinScreen();
         }
     } else {
-        // Failed attempt
-        barrel.barrelElement.classList.remove('progressing');
-        barrel.barrelElement.querySelector('.barrel-status').textContent = 'FAILED';
+        // FAILED - incorrect ENTER press
+        // Break a lockpick
+        gameState.lockpicks--;
+        lockpicksCount.textContent = gameState.lockpicks;
         
-        if (gameState.resetOnFail) {
-            // Reset all progress on failure
-            showMessage('Failed!', 'All barrels have been reset. Start from barrel 1 again.');
-            resetAllBarrels();
-        } else {
-            showMessage('Failed', 'Missed the sweet spot. Try again.');
-        }
+        // Play break sound
+        playSound(soundLockpickBreak, 0.4);
+        
+        // RESET ALL BARRELS on failed attempt
+        resetAllBarrels();
         
         // Check if out of lockpicks
         if (gameState.lockpicks <= 0) {
-            gameOver();
+            showLoseScreen();
         }
     }
 }
 
 // Stop lockpick movement
-function stopLockpickMovement() {
+function stopLockpickMovement(reachedEnd) {
     gameState.isLockpickMoving = false;
     
     if (gameState.animationId) {
@@ -292,38 +290,24 @@ function stopLockpickMovement() {
     
     // Reset progress bar
     const barrel = gameState.barrels[gameState.currentBarrel - 1];
-    if (barrel && barrel.barrelElement) {
+    if (barrel && barrel.barrelElement && !barrel.isUnlocked) {
         barrel.barrelElement.classList.remove('progressing');
         barrel.progressElement.style.width = '0%';
         
-        if (!barrel.isUnlocked) {
+        if (reachedEnd) {
+            // Lockpick reached end without ENTER press - no penalty, just reset
             barrel.barrelElement.querySelector('.barrel-status').textContent = 'READY';
         }
     }
     
-    // Reset lockpick position
+    // Reset lockpick position to 0
     lockpickEl.style.left = '0%';
 }
 
-// Retry current barrel
-function retryBarrel() {
-    if (!gameState.isGameActive) return;
-    
-    stopLockpickMovement();
-    
-    const barrel = gameState.barrels[gameState.currentBarrel - 1];
-    
-    if (!barrel.isUnlocked) {
-        showMessage('Ready', 'Press W to start lockpick movement.');
-    }
-}
-
-// Reset all barrels (on failure)
+// Reset ALL barrels (on failure)
 function resetAllBarrels() {
-    stopLockpickMovement();
-    
-    gameState.unlockedCount = 0;
     gameState.currentBarrel = 1;
+    currentBarrelEl.textContent = '1';
     
     // Reset all barrels
     gameState.barrels.forEach(barrel => {
@@ -334,15 +318,17 @@ function resetAllBarrels() {
         barrel.barrelElement.classList.add('locked');
         barrel.barrelElement.querySelector('.barrel-status').textContent = 'LOCKED';
         
-        // Generate new target position
-        barrel.targetPosition = Math.random() * 60 + 20;
+        // Generate new target position for each barrel
+        barrel.targetPosition = Math.random() * 40 + 30; // 30-70%
         barrel.targetElement.style.left = `${barrel.targetPosition}%`;
     });
     
-    // Reset UI
-    currentBarrelEl.textContent = '1';
-    unlockedCount.textContent = '0/5';
+    // Update current barrel visual
     updateCurrentBarrelVisual();
+    
+    // Update target zone for first barrel
+    const firstBarrel = gameState.barrels[0];
+    updateTargetZonePosition(firstBarrel.targetPosition);
 }
 
 // Update target zone position in lockpick visual
@@ -350,60 +336,24 @@ function updateTargetZonePosition(position) {
     targetZone.style.left = `${position}%`;
 }
 
-// Start the game
-function startGame() {
-    gameState.isGameActive = true;
-    gameState.currentBarrel = 1;
-    gameState.lockpicks = 10;
-    gameState.unlockedCount = 0;
-    
-    // Reset all barrels
-    createBarrels();
-    
-    // Update UI
-    currentBarrelEl.textContent = '1';
-    lockpicksCount.textContent = gameState.lockpicks;
-    unlockedCount.textContent = '0/5';
-    speedValue.textContent = '-';
-    
-    showMessage('Game Started', 'Press W to start lockpicking barrel 1. Failing a barrel will reset all progress!');
-    
-    // Update target zone to random position
-    const firstBarrel = gameState.barrels[0];
-    updateTargetZonePosition(firstBarrel.targetPosition);
-}
-
-// Reset entire game
-function resetGame() {
-    stopLockpickMovement();
-    startGame();
-}
-
-// Game win condition
-function gameWin() {
+// Show win screen
+function showWinScreen() {
     gameState.isGameActive = false;
-    stopLockpickMovement();
+    stopLockpickMovement(false);
     
-    showMessage('VICTORY!', 'All 5 barrels unlocked! The ancient mechanism yields to your skill.');
-    
-    // Celebrate
-    gameState.barrels.forEach(barrel => {
-        barrel.barrelElement.style.animation = 'pulse 1s infinite';
-    });
+    // Hide game, show win screen
+    gameContainer.style.display = 'none';
+    winScreen.classList.add('active');
 }
 
-// Game over condition
-function gameOver() {
+// Show lose screen
+function showLoseScreen() {
     gameState.isGameActive = false;
-    stopLockpickMovement();
+    stopLockpickMovement(false);
     
-    showMessage('GAME OVER', 'You ran out of lockpicks. The mechanism remains locked.');
-}
-
-// Show message
-function showMessage(title, text) {
-    messageTitle.textContent = title;
-    messageText.textContent = text;
+    // Hide game, show lose screen
+    gameContainer.style.display = 'none';
+    loseScreen.classList.add('active');
 }
 
 // Initialize when page loads
