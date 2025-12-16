@@ -6,10 +6,10 @@ const GAME_CONFIG = {
     barrelCount: 3,
     
     // Starting number of lockpicks
-    initialLockpicks: 10,
+    initialLockpicks: 3,
     
-    // Width of green target zone in pixels
-    targetZoneWidth: 100,
+    // Height of green target zone in pixels (vertical lockpick)
+    targetZoneHeight: 50,
     
     // Possible speeds for lockpick movement (lower = slower)
     speedVariants: [0.8, 1.0, 1.3, 1.6],
@@ -28,8 +28,8 @@ const GAME_CONFIG = {
 let gameState = null;
 
 // DOM elements
-let lockBarrels, currentBarrelEl, lockpicksCount, lockpickEl, targetZone;
-let winScreen, loseScreen, gameContainer, lockpickVisual;
+let lockBarrels, currentBarrelEl, lockpicksCount, lockpicksContainer;
+let winScreen, loseScreen, gameContainer;
 let soundLockpickMove, soundLockpickFix, soundLockpickBreak, soundBarrelUnlock;
 
 // Debug flag - set to true to see console messages
@@ -48,33 +48,25 @@ function initGame() {
         initGameState();
         console.log('Game state initialized');
         
-        // Calculate container width for accurate positioning
-        gameState.containerWidth = lockpickVisual.offsetWidth;
-        console.log('Container width:', gameState.containerWidth);
-        
         // Create barrels based on config
         createBarrels();
-        console.log('Barrels created:', gameState.settings.barrelCount);
+        console.log('Barrels created');
+        
+        // Create vertical lockpick tracks
+        createLockpickTracks();
+        console.log('Lockpick tracks created');
         
         // Setup event listeners
         setupEventListeners();
         console.log('Event listeners set up');
         
-        // Initialize target zone position for first barrel
-        const firstBarrel = gameState.barrels[0];
-        if (firstBarrel) {
-            updateTargetZonePosition(firstBarrel.targetPosition);
-            console.log('Target zone positioned at:', firstBarrel.targetPosition + '%');
-        }
-        
         // Update UI with initial values
         currentBarrelEl.textContent = gameState.currentBarrel;
         lockpicksCount.textContent = gameState.lockpicks;
-        console.log('UI updated');
         
         // Focus the game container for keyboard input
         gameContainer.focus();
-        console.log('Game container focused for keyboard input');
+        console.log('Game container focused');
         
         // Add click event to regain focus if needed
         gameContainer.addEventListener('click', () => {
@@ -82,27 +74,7 @@ function initGame() {
             console.log('Game container re-focused on click');
         });
         
-        // Add tabindex to make game container focusable
-        gameContainer.setAttribute('tabindex', '0');
-        gameContainer.style.outline = 'none'; // Remove focus outline
-        
-        // Listen for window resize
-        window.addEventListener('resize', () => {
-            gameState.containerWidth = lockpickVisual.offsetWidth;
-            // Update target zone position on resize
-            const currentBarrel = gameState.barrels[gameState.currentBarrel - 1];
-            if (currentBarrel) {
-                updateTargetZonePosition(currentBarrel.targetPosition);
-            }
-        });
-        
         console.log('Game initialization complete!');
-        console.log('Current state:', {
-            isGameActive: gameState.isGameActive,
-            currentBarrel: gameState.currentBarrel,
-            lockpicks: gameState.lockpicks,
-            containerWidth: gameState.containerWidth
-        });
         
     } catch (error) {
         console.error('Error initializing game:', error);
@@ -117,12 +89,10 @@ function initDOMElements() {
     lockBarrels = document.getElementById('lockBarrels');
     currentBarrelEl = document.getElementById('currentBarrel');
     lockpicksCount = document.getElementById('lockpicksCount');
-    lockpickEl = document.getElementById('lockpick');
-    targetZone = document.getElementById('targetZone');
+    lockpicksContainer = document.getElementById('lockpicksContainer');
     winScreen = document.getElementById('winScreen');
     loseScreen = document.getElementById('loseScreen');
     gameContainer = document.getElementById('gameContainer');
-    lockpickVisual = document.querySelector('.lockpick-visual');
     
     soundLockpickMove = document.getElementById('soundLockpickMove');
     soundLockpickFix = document.getElementById('soundLockpickFix');
@@ -134,12 +104,10 @@ function initDOMElements() {
         lockBarrels: !!lockBarrels,
         currentBarrelEl: !!currentBarrelEl,
         lockpicksCount: !!lockpicksCount,
-        lockpickEl: !!lockpickEl,
-        targetZone: !!targetZone,
+        lockpicksContainer: !!lockpicksContainer,
         winScreen: !!winScreen,
         loseScreen: !!loseScreen,
-        gameContainer: !!gameContainer,
-        lockpickVisual: !!lockpickVisual
+        gameContainer: !!gameContainer
     });
 }
 
@@ -150,27 +118,22 @@ function initGameState() {
     
     gameState = {
         barrels: [],
+        lockpickTracks: [], // Store lockpick track elements
         currentBarrel: 1,
         lockpicks: settings.initialLockpicks,
         isGameActive: true,
         isLockpickMoving: false,
         currentSpeed: 0,
-        lockpickPosition: 0,
+        lockpickPosition: 0, // Now represents vertical position (0-100%)
         animationId: null,
         speedVariants: settings.speedVariants,
         trackLength: settings.trackLength,
-        targetZoneHalfWidth: settings.targetZoneWidth / 2,
-        containerWidth: 0,
+        targetZoneHalfHeight: settings.targetZoneHeight / 2,
+        containerHeight: 250, // Default height, will be updated
         settings: settings
     };
     
-    // Update target zone width in CSS
-    if (targetZone) {
-        targetZone.style.width = `${settings.targetZoneWidth}px`;
-        console.log('Target zone width set to:', settings.targetZoneWidth + 'px');
-    }
-    
-    console.log('Game state initialized with settings:', settings);
+    console.log('Game state initialized:', gameState);
 }
 
 // Validate configuration values
@@ -183,8 +146,8 @@ function validateConfig(config) {
     // Ensure initialLockpicks is positive
     validated.initialLockpicks = Math.max(1, Number(validated.initialLockpicks) || 10);
     
-    // Ensure targetZoneWidth is reasonable
-    validated.targetZoneWidth = Math.max(50, Math.min(200, Number(validated.targetZoneWidth) || 100));
+    // Ensure targetZoneHeight is reasonable
+    validated.targetZoneHeight = Math.max(30, Math.min(100, Number(validated.targetZoneHeight) || 50));
     
     // Ensure speedVariants is an array with valid numbers
     if (!Array.isArray(validated.speedVariants)) {
@@ -226,7 +189,10 @@ function createBarrels() {
             currentProgress: 0,
             progressElement: null,
             targetElement: null,
-            barrelElement: null
+            barrelElement: null,
+            lockpickElement: null,
+            targetZoneElement: null,
+            trackElement: null
         };
         
         gameState.barrels.push(barrel);
@@ -235,7 +201,6 @@ function createBarrels() {
         const barrelEl = document.createElement('div');
         barrelEl.className = 'barrel locked';
         barrelEl.dataset.id = i;
-        barrelEl.dataset.count = barrelCount;
         
         barrelEl.innerHTML = `
             <div class="barrel-header">
@@ -274,6 +239,79 @@ function createBarrels() {
     updateCurrentBarrelVisual();
 }
 
+// Create vertical lockpick tracks under each barrel
+function createLockpickTracks() {
+    if (!lockpicksContainer) {
+        console.error('lockpicksContainer element not found!');
+        return;
+    }
+    
+    lockpicksContainer.innerHTML = '';
+    gameState.lockpickTracks = [];
+    
+    const barrelCount = gameState.settings.barrelCount;
+    const containerHeight = lockpicksContainer.offsetHeight;
+    gameState.containerHeight = containerHeight;
+    
+    console.log('Lockpick container height:', containerHeight);
+    
+    for (let i = 1; i <= barrelCount; i++) {
+        const barrel = gameState.barrels[i - 1];
+        
+        // Create lockpick track container
+        const trackContainer = document.createElement('div');
+        trackContainer.className = 'lockpick-track';
+        trackContainer.dataset.barrelId = i;
+        
+        // Add connector line
+        const connectorLine = document.createElement('div');
+        connectorLine.className = 'connector-line';
+        trackContainer.appendChild(connectorLine);
+        
+        // Create lockpick visual track
+        const trackVisual = document.createElement('div');
+        trackVisual.className = 'lockpick-visual';
+        
+        // Create center line
+        const centerLine = document.createElement('div');
+        centerLine.className = 'lockpick-line';
+        trackVisual.appendChild(centerLine);
+        
+        // Create lockpick element (will move vertically)
+        const lockpickEl = document.createElement('div');
+        lockpickEl.className = 'lockpick';
+        lockpickEl.dataset.barrelId = i;
+        trackVisual.appendChild(lockpickEl);
+        
+        // Create target zone
+        const targetZoneEl = document.createElement('div');
+        targetZoneEl.className = 'lockpick-target';
+        targetZoneEl.dataset.barrelId = i;
+        trackVisual.appendChild(targetZoneEl);
+        
+        // Set target zone height from config
+        targetZoneEl.style.height = `${gameState.settings.targetZoneHeight}px`;
+        
+        trackContainer.appendChild(trackVisual);
+        lockpicksContainer.appendChild(trackContainer);
+        
+        // Store references
+        barrel.lockpickElement = lockpickEl;
+        barrel.targetZoneElement = targetZoneEl;
+        barrel.trackElement = trackContainer;
+        
+        gameState.lockpickTracks.push(trackContainer);
+        
+        // Position target zone
+        updateTargetZonePosition(i, barrel.targetPosition);
+        
+        if (DEBUG) {
+            console.log(`Lockpick track ${i} created with height ${containerHeight}px`);
+            console.log(`Target zone height: ${gameState.settings.targetZoneHeight}px`);
+        }
+    }
+}
+
 // Update rules text with current barrel count
 function updateRulesText(barrelCount) {
     const rulesList = document.querySelector('.rules ul');
@@ -286,55 +324,27 @@ function updateRulesText(barrelCount) {
 function setupEventListeners() {
     // Remove any existing listeners first
     document.removeEventListener('keydown', handleKeyPress);
+    gameContainer.removeEventListener('keydown', handleKeyPress);
     
-    // Add keyboard event listener to document (not just game container)
+    // Add keyboard event listener to document
     document.addEventListener('keydown', handleKeyPress);
     console.log('Keyboard event listener added to document');
     
     // Also add to game container for extra safety
     gameContainer.addEventListener('keydown', handleKeyPress);
     console.log('Keyboard event listener also added to game container');
-    
-    // Add a test button for debugging if needed
-    if (DEBUG) {
-        // Remove existing test button if any
-        const existingButton = document.querySelector('#testButton');
-        if (existingButton) existingButton.remove();
-        
-        const testButton = document.createElement('button');
-        testButton.id = 'testButton';
-        testButton.textContent = 'TEST: Start Lockpick';
-        testButton.style.position = 'fixed';
-        testButton.style.top = '10px';
-        testButton.style.right = '10px';
-        testButton.style.zIndex = '1000';
-        testButton.style.padding = '10px';
-        testButton.style.background = '#8a6dc7';
-        testButton.style.color = 'white';
-        testButton.style.border = 'none';
-        testButton.style.borderRadius = '5px';
-        testButton.style.cursor = 'pointer';
-        testButton.style.fontFamily = 'Cinzel, serif';
-        testButton.style.fontWeight = 'bold';
-        
-        testButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            console.log('Test button clicked - attempting to start lockpick');
-            startLockpick();
-        });
-        
-        document.body.appendChild(testButton);
-    }
 }
 
 // Handle keyboard input
 function handleKeyPress(e) {
+    console.log('Key pressed:', e.key, 
+                'Game active:', gameState?.isGameActive, 
+                'Lockpick moving:', gameState?.isLockpickMoving);
+    
     // Prevent default behavior for game keys
     if (e.key === 'w' || e.key === 'W' || e.key === 'Enter') {
         e.preventDefault();
     }
-    
-    console.log('Key pressed:', e.key, 'Game active:', gameState?.isGameActive, 'Lockpick moving:', gameState?.isLockpickMoving);
     
     if (!gameState || !gameState.isGameActive) {
         console.log('Game not active or gameState not initialized');
@@ -441,21 +451,21 @@ function startLockpick() {
     barrel.barrelElement.querySelector('.barrel-status').textContent = 'IN PROGRESS';
     
     // Set target zone for current barrel
-    updateTargetZonePosition(barrel.targetPosition);
+    updateTargetZonePosition(gameState.currentBarrel, barrel.targetPosition);
     
     console.log('Starting movement animation...');
     // Start movement animation
     moveLockpick();
 }
 
-// Move the lockpick
+// Move the lockpick (vertical movement)
 function moveLockpick() {
     if (!gameState.isLockpickMoving) {
         console.log('moveLockpick called but lockpick not moving');
         return;
     }
     
-    // Update lockpick position
+    // Update lockpick position (vertical)
     gameState.lockpickPosition += gameState.currentSpeed;
     
     // Check if reached the end (trackLength%)
@@ -485,13 +495,31 @@ function moveLockpick() {
     gameState.animationId = requestAnimationFrame(() => moveLockpick());
 }
 
-// Update lockpick visual position with proper centering
+// Update lockpick visual position (vertical)
 function updateLockpickVisualPosition() {
-    const pixelPosition = (gameState.lockpickPosition / 100) * gameState.containerWidth;
-    lockpickEl.style.left = `${pixelPosition}px`;
+    const barrel = gameState.barrels[gameState.currentBarrel - 1];
+    if (!barrel || !barrel.lockpickElement) return;
     
-    if (DEBUG && gameState.lockpickPosition % 20 < 1) {
+    // Calculate pixel position based on container height
+    const pixelPosition = (gameState.lockpickPosition / 100) * gameState.containerHeight;
+    barrel.lockpickElement.style.top = `${pixelPosition}px`;
+    
+    if (DEBUG && Math.floor(gameState.lockpickPosition) % 20 === 0) {
         console.log('Lockpick position:', gameState.lockpickPosition.toFixed(1) + '%', 'pixels:', pixelPosition.toFixed(1));
+    }
+}
+
+// Update target zone position in lockpick visual (vertical)
+function updateTargetZonePosition(barrelId, position) {
+    const barrel = gameState.barrels[barrelId - 1];
+    if (!barrel || !barrel.targetZoneElement) return;
+    
+    // Calculate pixel position based on container height
+    const pixelPosition = (position / 100) * gameState.containerHeight;
+    barrel.targetZoneElement.style.top = `${pixelPosition}px`;
+    
+    if (DEBUG) {
+        console.log(`Target zone ${barrelId} updated to:`, position.toFixed(1) + '%', 'pixels:', pixelPosition.toFixed(1));
     }
 }
 
@@ -520,20 +548,20 @@ function fixLockpick() {
     playSound(soundLockpickFix, 0.4);
     
     // Get ACTUAL pixel positions for accurate detection
-    const containerWidth = gameState.containerWidth;
-    const lockpickPixelPosition = (gameState.lockpickPosition / 100) * containerWidth;
-    const targetZonePixelPosition = (barrel.targetPosition / 100) * containerWidth;
+    const containerHeight = gameState.containerHeight;
+    const lockpickPixelPosition = (gameState.lockpickPosition / 100) * containerHeight;
+    const targetZonePixelPosition = (barrel.targetPosition / 100) * containerHeight;
     
-    // Get target zone width from config
-    const targetZonePixelWidth = gameState.settings.targetZoneWidth;
-    const targetZoneHalfPixelWidth = targetZonePixelWidth / 2;
+    // Get target zone height from config
+    const targetZonePixelHeight = gameState.settings.targetZoneHeight;
+    const targetZoneHalfPixelHeight = targetZonePixelHeight / 2;
     
-    // Calculate the center of the lockpick (4px from left edge since lockpick is 8px wide)
-    const lockpickCenter = lockpickPixelPosition + 4;
+    // Calculate the center of the lockpick (8px from top edge since lockpick is 16px high)
+    const lockpickCenter = lockpickPixelPosition + 8;
     
     // Calculate target zone boundaries
-    const minTarget = targetZonePixelPosition - targetZoneHalfPixelWidth;
-    const maxTarget = targetZonePixelPosition + targetZoneHalfPixelWidth;
+    const minTarget = targetZonePixelPosition - targetZoneHalfPixelHeight;
+    const maxTarget = targetZonePixelPosition + targetZoneHalfPixelHeight;
     
     // Check if lockpick center is within target zone
     const isInTargetZone = lockpickCenter >= minTarget && lockpickCenter <= maxTarget;
@@ -544,7 +572,7 @@ function fixLockpick() {
         lockpickCenter: lockpickCenter.toFixed(1) + 'px',
         targetPosition: barrel.targetPosition.toFixed(1) + '%',
         targetPixels: targetZonePixelPosition.toFixed(1) + 'px',
-        targetZoneWidth: targetZonePixelWidth + 'px',
+        targetZoneHeight: targetZonePixelHeight + 'px',
         targetZone: `[${minTarget.toFixed(1)}px - ${maxTarget.toFixed(1)}px]`,
         isInTargetZone: isInTargetZone
     });
@@ -568,10 +596,6 @@ function fixLockpick() {
             gameState.currentBarrel++;
             currentBarrelEl.textContent = gameState.currentBarrel;
             updateCurrentBarrelVisual();
-            
-            // Update target zone for new barrel
-            const nextBarrel = gameState.barrels[gameState.currentBarrel - 1];
-            updateTargetZonePosition(nextBarrel.targetPosition);
             
             console.log('Moving to next barrel:', gameState.currentBarrel);
         } else {
@@ -625,8 +649,10 @@ function stopLockpickMovement(reachedEnd) {
         }
     }
     
-    // Reset lockpick position to 0
-    lockpickEl.style.left = '0px';
+    // Reset lockpick position to top
+    if (barrel && barrel.lockpickElement) {
+        barrel.lockpickElement.style.top = '0px';
+    }
 }
 
 // Reset ALL barrels (on failure)
@@ -650,27 +676,18 @@ function resetAllBarrels() {
         // Generate new target position for each barrel
         barrel.targetPosition = Math.random() * targetRange + targetMin;
         barrel.targetElement.style.left = `${barrel.targetPosition}%`;
+        
+        // Update target zone in lockpick track
+        updateTargetZonePosition(barrel.id, barrel.targetPosition);
+        
+        // Reset lockpick position
+        if (barrel.lockpickElement) {
+            barrel.lockpickElement.style.top = '0px';
+        }
     });
     
     // Update current barrel visual
     updateCurrentBarrelVisual();
-    
-    // Update target zone for first barrel
-    const firstBarrel = gameState.barrels[0];
-    updateTargetZonePosition(firstBarrel.targetPosition);
-    
-    console.log('All barrels reset. New target positions:', gameState.barrels.map(b => b.targetPosition.toFixed(1)));
-}
-
-// Update target zone position in lockpick visual
-function updateTargetZonePosition(position) {
-    // Calculate pixel position based on container width
-    const pixelPosition = (position / 100) * gameState.containerWidth;
-    targetZone.style.left = `${pixelPosition}px`;
-    
-    if (DEBUG) {
-        console.log('Target zone updated to:', position.toFixed(1) + '%', 'pixels:', pixelPosition.toFixed(1));
-    }
 }
 
 // Show win screen
@@ -681,8 +698,6 @@ function showWinScreen() {
     // Hide game, show win screen
     gameContainer.style.display = 'none';
     winScreen.classList.add('active');
-    
-    console.log('Win screen shown');
 }
 
 // Show lose screen
@@ -693,8 +708,6 @@ function showLoseScreen() {
     // Hide game, show lose screen
     gameContainer.style.display = 'none';
     loseScreen.classList.add('active');
-    
-    console.log('Lose screen shown');
 }
 
 // Initialize when page loads

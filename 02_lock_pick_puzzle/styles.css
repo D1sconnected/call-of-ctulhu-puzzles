@@ -17,13 +17,14 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1200px;
     width: 100%;
     background: rgba(20, 20, 35, 0.95);
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     border: 1px solid #3a3a5a;
+    outline: none;
 }
 
 /* Header */
@@ -59,18 +60,24 @@ h1 {
 .game-container {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-}
-
-/* Horizontal barrels container */
-.barrels-container {
+    gap: 10px;
     width: 100%;
 }
 
+/* Barrels and lockpicks container */
+.barrels-lockpicks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+/* Horizontal barrels container */
 .lock-barrels {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 20px;
     width: 100%;
 }
 
@@ -82,17 +89,13 @@ h1 {
     border: 2px solid #4a4a6a;
     transition: all 0.3s ease;
     min-height: 120px;
+    max-width: 180px; /* Standard width for all barrels */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: relative;
     overflow: hidden;
 }
-
-/* Adjust barrel width based on count */
-.barrel[data-count="3"] { max-width: 200px; }
-.barrel[data-count="4"] { max-width: 180px; }
-.barrel[data-count="5"] { max-width: 160px; }
 
 .barrel.current {
     border-color: #8a6dc7;
@@ -193,59 +196,82 @@ h1 {
     z-index: 1;
 }
 
-/* Lockpick container */
-.lockpick-container {
-    background: rgba(30, 30, 50, 0.8);
-    border-radius: 10px;
-    padding: 20px;
-    border: 1px solid #4a4a6a;
+/* Vertical lockpicks container */
+.lockpicks-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    height: 250px;
+}
+
+.lockpick-track {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    max-width: 180px; /* EXACT SAME WIDTH AS BARRELS */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Connector lines between barrels and lockpicks */
+.connector-line {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 15px;
+    background: #5a5a7a;
 }
 
 .lockpick-visual {
-    width: 100%;
-    height: 150px;
+    width: 100%; /* Full width of track container */
+    height: 100%;
     background: #1a1a2a;
-    border-radius: 10px;
+    border-radius: 8px;
     position: relative;
     overflow: hidden;
     border: 2px solid #5a5a7a;
+    margin-top: 5px;
 }
 
 .lockpick-line {
     position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
     background: rgba(255, 255, 255, 0.1);
-    top: 50%;
-    transform: translateY(-50%);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .lockpick {
     position: absolute;
-    left: 0px;
-    width: 8px;
-    height: 100%;
-    background: linear-gradient(to bottom, #e6e6fa, #c9c9d9);
-    top: 0;
-    transform: translateX(-50%);
-    border-radius: 4px;
+    top: 0%;
+    width: 100%; /* Full width of track */
+    height: 16px;
+    background: linear-gradient(to right, #e6e6fa, #c9c9d9);
+    left: 0;
+    transform: translateY(-50%);
+    border-radius: 0 0 8px 8px; /* Rounded bottom only */
     z-index: 2;
-    transition: left 0.05s linear;
+    transition: top 0.05s linear;
     box-shadow: 0 0 20px rgba(230, 230, 250, 0.7);
 }
 
 .lockpick-target {
     position: absolute;
-    /* Width will be set dynamically by JavaScript based on config */
-    height: 100%;
-    background: rgba(76, 175, 80, 0.25);
-    top: 0;
-    border-left: 3px solid #4caf50;
-    border-right: 3px solid #4caf50;
+    height: 50px;
+    width: 100%; /* Full width of track */
+    background: rgba(76, 175, 80, 0.3);
+    left: 0;
+    border-top: 3px solid #4caf50;
+    border-bottom: 3px solid #4caf50;
     pointer-events: none;
     z-index: 1;
-    transform: translateX(-50%);
+    transform: translateY(-50%);
 }
 
 /* Game info section */
@@ -253,6 +279,7 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 30px;
+    margin-top: 30px;
 }
 
 .game-status {
@@ -442,8 +469,14 @@ footer {
         flex-wrap: wrap;
     }
     
-    .barrel {
+    .lockpicks-container {
+        flex-wrap: wrap;
+        height: 200px;
+    }
+    
+    .barrel, .lockpick-track {
         min-width: 140px;
+        max-width: 160px;
     }
     
     h1 {
@@ -456,12 +489,16 @@ footer {
 }
 
 @media (max-width: 600px) {
-    .lock-barrels {
+    .lock-barrels, .lockpicks-container {
         gap: 10px;
     }
     
-    .barrel {
+    .barrel, .lockpick-track {
         min-width: 100px;
+        max-width: 120px;
+    }
+    
+    .barrel {
         padding: 15px 10px;
     }
     
@@ -483,5 +520,9 @@ footer {
     
     .splash-content p {
         font-size: 1.1rem;
+    }
+    
+    .lockpicks-container {
+        height: 180px;
     }
 }
