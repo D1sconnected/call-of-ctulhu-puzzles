@@ -3,7 +3,7 @@
 // ============================================
 const GAME_CONFIG = {
     // Number of lock barrels (3-5)
-    barrelCount: 3,
+    barrelCount: 5,
     
     // Starting number of lockpicks
     initialLockpicks: 3,
@@ -65,14 +65,7 @@ function initGame() {
         lockpicksCount.textContent = gameState.lockpicks;
         
         // Focus the game container for keyboard input
-        gameContainer.focus();
-        console.log('Game container focused');
-        
-        // Add click event to regain focus if needed
-        gameContainer.addEventListener('click', () => {
-            gameContainer.focus();
-            console.log('Game container re-focused on click');
-        });
+        focusGameContainer();
         
         console.log('Game initialization complete!');
         
@@ -108,6 +101,42 @@ function initDOMElements() {
         winScreen: !!winScreen,
         loseScreen: !!loseScreen,
         gameContainer: !!gameContainer
+    });
+}
+
+// Focus the game container for keyboard input
+function focusGameContainer() {
+    if (!gameContainer) {
+        console.error('gameContainer element not found!');
+        return;
+    }
+    
+    // Set tabindex to make it focusable if not already
+    gameContainer.setAttribute('tabindex', '0');
+    
+    // Focus it
+    gameContainer.focus();
+    console.log('Game container focused');
+    
+    // Add visual indicator for debugging
+    gameContainer.style.outline = '2px solid #8a6dc7';
+    gameContainer.style.outlineOffset = '2px';
+    
+    // Add event listeners to regain focus when clicking anywhere
+    document.addEventListener('click', (e) => {
+        // If not clicking on a splash screen button
+        if (!e.target.closest('.splash-btn')) {
+            gameContainer.focus();
+            console.log('Game container re-focused on click');
+        }
+    });
+    
+    // Also focus when any key is pressed
+    document.addEventListener('keydown', (e) => {
+        if (!gameContainer.contains(document.activeElement)) {
+            gameContainer.focus();
+            console.log('Game container re-focused on keydown');
+        }
     });
 }
 
@@ -326,13 +355,22 @@ function setupEventListeners() {
     document.removeEventListener('keydown', handleKeyPress);
     gameContainer.removeEventListener('keydown', handleKeyPress);
     
-    // Add keyboard event listener to document
+    // Add keyboard event listener to the document (not just game container)
     document.addEventListener('keydown', handleKeyPress);
     console.log('Keyboard event listener added to document');
     
     // Also add to game container for extra safety
     gameContainer.addEventListener('keydown', handleKeyPress);
     console.log('Keyboard event listener also added to game container');
+    
+    // Add a click event to focus game container when clicking anywhere
+    document.addEventListener('click', (e) => {
+        // If not clicking on win/lose screen button
+        if (!e.target.closest('.splash-btn') && gameState && gameState.isGameActive) {
+            gameContainer.focus();
+            console.log('Game container focused on document click');
+        }
+    });
 }
 
 // Handle keyboard input
@@ -341,9 +379,10 @@ function handleKeyPress(e) {
                 'Game active:', gameState?.isGameActive, 
                 'Lockpick moving:', gameState?.isLockpickMoving);
     
-    // Prevent default behavior for game keys
+    // Prevent default behavior for game keys to avoid scrolling or other actions
     if (e.key === 'w' || e.key === 'W' || e.key === 'Enter') {
         e.preventDefault();
+        e.stopPropagation();
     }
     
     if (!gameState || !gameState.isGameActive) {
@@ -355,12 +394,14 @@ function handleKeyPress(e) {
     if ((e.key === 'w' || e.key === 'W') && !gameState.isLockpickMoving) {
         console.log('Starting lockpick movement...');
         startLockpick();
+        return; // Stop further processing
     }
     
     // Fix lockpick position - only if lockpick is moving
     if (e.key === 'Enter' && gameState.isLockpickMoving) {
         console.log('Fixing lockpick position...');
         fixLockpick();
+        return; // Stop further processing
     }
 }
 
