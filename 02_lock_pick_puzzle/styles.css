@@ -82,13 +82,17 @@ h1 {
     border: 2px solid #4a4a6a;
     transition: all 0.3s ease;
     min-height: 120px;
-    max-width: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: relative;
     overflow: hidden;
 }
+
+/* Adjust barrel width based on count */
+.barrel[data-count="3"] { max-width: 200px; }
+.barrel[data-count="4"] { max-width: 180px; }
+.barrel[data-count="5"] { max-width: 160px; }
 
 .barrel.current {
     border-color: #8a6dc7;
@@ -219,7 +223,7 @@ h1 {
 
 .lockpick {
     position: absolute;
-    left: 0%;
+    left: 0px;
     width: 8px;
     height: 100%;
     background: linear-gradient(to bottom, #e6e6fa, #c9c9d9);
@@ -233,14 +237,15 @@ h1 {
 
 .lockpick-target {
     position: absolute;
-    width: 100px; /* WIDER target zone */
+    /* Width will be set dynamically by JavaScript based on config */
     height: 100%;
-    background: rgba(76, 175, 80, 0.25); /* More visible */
+    background: rgba(76, 175, 80, 0.25);
     top: 0;
     border-left: 3px solid #4caf50;
     border-right: 3px solid #4caf50;
     pointer-events: none;
     z-index: 1;
+    transform: translateX(-50%);
 }
 
 /* Game info section */
