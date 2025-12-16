@@ -3,7 +3,7 @@
 // ============================================
 const GAME_CONFIG = {
     // Number of lock barrels (3-5)
-    barrelCount: 5,
+    barrelCount: 4,
     
     // Starting number of lockpicks
     initialLockpicks: 3,
@@ -118,16 +118,11 @@ function focusGameContainer() {
     gameContainer.focus();
     console.log('Game container focused');
     
-    // Add visual indicator for debugging
-    gameContainer.style.outline = '2px solid #8a6dc7';
-    gameContainer.style.outlineOffset = '2px';
-    
     // Add event listeners to regain focus when clicking anywhere
     document.addEventListener('click', (e) => {
         // If not clicking on a splash screen button
-        if (!e.target.closest('.splash-btn')) {
+        if (!e.target.closest('.metal-btn')) {
             gameContainer.focus();
-            console.log('Game container re-focused on click');
         }
     });
     
@@ -135,7 +130,6 @@ function focusGameContainer() {
     document.addEventListener('keydown', (e) => {
         if (!gameContainer.contains(document.activeElement)) {
             gameContainer.focus();
-            console.log('Game container re-focused on keydown');
         }
     });
 }
@@ -217,7 +211,6 @@ function createBarrels() {
             targetPosition: Math.random() * targetRange + targetMin,
             currentProgress: 0,
             progressElement: null,
-            targetElement: null,
             barrelElement: null,
             lockpickElement: null,
             targetZoneElement: null,
@@ -241,20 +234,11 @@ function createBarrels() {
             </div>
         `;
         
-        // Add target zone overlay
-        const targetEl = document.createElement('div');
-        targetEl.className = 'barrel-target';
-        barrelEl.appendChild(targetEl);
-        
         lockBarrels.appendChild(barrelEl);
         
         // Store references
         barrel.progressElement = barrelEl.querySelector('.progress-fill');
-        barrel.targetElement = targetEl;
         barrel.barrelElement = barrelEl;
-        
-        // Position target zone
-        barrel.targetElement.style.left = `${barrel.targetPosition}%`;
         
         if (DEBUG) {
             console.log(`Barrel ${i} created with target at ${barrel.targetPosition.toFixed(1)}%`);
@@ -366,9 +350,8 @@ function setupEventListeners() {
     // Add a click event to focus game container when clicking anywhere
     document.addEventListener('click', (e) => {
         // If not clicking on win/lose screen button
-        if (!e.target.closest('.splash-btn') && gameState && gameState.isGameActive) {
+        if (!e.target.closest('.metal-btn') && gameState && gameState.isGameActive) {
             gameContainer.focus();
-            console.log('Game container focused on document click');
         }
     });
 }
@@ -716,7 +699,6 @@ function resetAllBarrels() {
         
         // Generate new target position for each barrel
         barrel.targetPosition = Math.random() * targetRange + targetMin;
-        barrel.targetElement.style.left = `${barrel.targetPosition}%`;
         
         // Update target zone in lockpick track
         updateTargetZonePosition(barrel.id, barrel.targetPosition);
