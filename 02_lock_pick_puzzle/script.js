@@ -8,12 +8,10 @@ const gameState = {
     currentSpeed: 0,
     lockpickPosition: 0,
     animationId: null,
-    // SLOWER speeds: 0.8, 1.0, 1.3, 1.6 (was 1.0, 1.5, 2.0, 2.5)
     speedVariants: [0.8, 1.0, 1.3, 1.6],
-    // SHORTER track: 80% (was 100%)
     trackLength: 80,
-    // WIDER target zone: 15% tolerance (was 10%)
-    targetZoneHalfWidth: 7.5
+    targetZoneHalfWidth: 7.5,
+    containerWidth: 0 // Will be set dynamically
 };
 
 // DOM elements
@@ -25,6 +23,7 @@ const targetZone = document.getElementById('targetZone');
 const winScreen = document.getElementById('winScreen');
 const loseScreen = document.getElementById('loseScreen');
 const gameContainer = document.getElementById('gameContainer');
+const lockpickVisual = document.querySelector('.lockpick-visual');
 
 // Audio elements
 const soundLockpickMove = document.getElementById('soundLockpickMove');
@@ -34,6 +33,9 @@ const soundBarrelUnlock = document.getElementById('soundBarrelUnlock');
 
 // Initialize game on page load
 function initGame() {
+    // Calculate container width for accurate positioning
+    gameState.containerWidth = lockpickVisual.offsetWidth;
+    
     createBarrels();
     setupEventListeners();
     
@@ -42,6 +44,11 @@ function initGame() {
     if (firstBarrel) {
         updateTargetZonePosition(firstBarrel.targetPosition);
     }
+    
+    // Listen for window resize
+    window.addEventListener('resize', () => {
+        gameState.containerWidth = lockpickVisual.offsetWidth;
+    });
 }
 
 // Create 5 horizontal lock barrels
@@ -196,7 +203,7 @@ function moveLockpick() {
         gameState.lockpickPosition = gameState.trackLength;
         
         // Update visuals
-        lockpickEl.style.left = `${gameState.lockpickPosition}%`;
+        updateLockpickVisualPosition();
         const barrel = gameState.barrels[gameState.currentBarrel - 1];
         barrel.progressElement.style.width = `${gameState.lockpickPosition}%`;
         
@@ -206,7 +213,7 @@ function moveLockpick() {
     }
     
     // Update lockpick visual position
-    lockpickEl.style.left = `${gameState.lockpickPosition}%`;
+    updateLockpickVisualPosition();
     
     // Update barrel progress visual for current barrel
     const barrel = gameState.barrels[gameState.currentBarrel - 1];
@@ -214,6 +221,14 @@ function moveLockpick() {
     
     // Continue animation
     gameState.animationId = requestAnimationFrame(() => moveLockpick());
+}
+
+// Update lockpick visual position with proper centering
+function updateLockpickVisualPosition() {
+    // The lockpick element is 8px wide, so we need to account for its center
+    // position = (lockpickPosition% of container) - 4px (half of lockpick width)
+    const pixelPosition = (gameState.lockpickPosition / 100) * gameState.containerWidth;
+    lockpickEl.style.left = `${pixelPosition}px`;
 }
 
 // Fix lockpick at current position
@@ -225,14 +240,34 @@ function fixLockpick() {
     // Play lockpick fix sound
     playSound(soundLockpickFix, 0.4);
     
-    // Calculate if lockpick is in the target zone
-    const targetZonePercent = barrel.targetPosition;
-    const lockpickPercent = gameState.lockpickPosition;
+    // Get ACTUAL pixel positions for accurate detection
+    const containerWidth = gameState.containerWidth;
+    const lockpickPixelPosition = (gameState.lockpickPosition / 100) * containerWidth;
+    const targetZonePixelPosition = (barrel.targetPosition / 100) * containerWidth;
+    
+    // Target zone is 100px wide in CSS (50px on each side of center)
+    const targetZoneHalfPixelWidth = 50; // Half of 100px target zone
+    
+    // Calculate the center of the lockpick (4px from left edge since lockpick is 8px wide)
+    const lockpickCenter = lockpickPixelPosition + 4;
+    
+    // Calculate target zone boundaries
+    const minTarget = targetZonePixelPosition - targetZoneHalfPixelWidth;
+    const maxTarget = targetZonePixelPosition + targetZoneHalfPixelWidth;
     
     // Check if lockpick center is within target zone
-    const minTarget = targetZonePercent - gameState.targetZoneHalfWidth;
-    const maxTarget = targetZonePercent + gameState.targetZoneHalfWidth;
-    const isInTargetZone = lockpickPercent >= minTarget && lockpickPercent <= maxTarget;
+    const isInTargetZone = lockpickCenter >= minTarget && lockpickCenter <= maxTarget;
+    
+    // DEBUG: Show hitbox information in console
+    console.log('Detection debug:', {
+        lockpickPosition: gameState.lockpickPosition.toFixed(1) + '%',
+        lockpickPixels: lockpickPixelPosition.toFixed(1) + 'px',
+        lockpickCenter: lockpickCenter.toFixed(1) + 'px',
+        targetPosition: barrel.targetPosition.toFixed(1) + '%',
+        targetPixels: targetZonePixelPosition.toFixed(1) + 'px',
+        targetZone: `[${minTarget.toFixed(1)}px - ${maxTarget.toFixed(1)}px]`,
+        isInTargetZone: isInTargetZone
+    });
     
     // Stop movement
     stopLockpickMovement(false);
@@ -301,7 +336,7 @@ function stopLockpickMovement(reachedEnd) {
     }
     
     // Reset lockpick position to 0
-    lockpickEl.style.left = '0%';
+    lockpickEl.style.left = '0px';
 }
 
 // Reset ALL barrels (on failure)
@@ -333,7 +368,10 @@ function resetAllBarrels() {
 
 // Update target zone position in lockpick visual
 function updateTargetZonePosition(position) {
-    targetZone.style.left = `${position}%`;
+    // Calculate pixel position based on container width
+    const pixelPosition = (position / 100) * gameState.containerWidth;
+    targetZone.style.left = `${pixelPosition}px`;
+    targetZone.style.transform = 'translateX(-50%)'; // Center the target zone
 }
 
 // Show win screen
