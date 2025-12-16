@@ -12,7 +12,7 @@ const GAME_CONFIG = {
     targetZoneHeight: 50,
     
     // Possible speeds for lockpick movement (lower = slower)
-    speedVariants: [0.8, 1.0, 1.3, 1.6],
+    speedVariants: [1.2, 2.0, 2.3, 1.7],
     
     // How far the lockpick travels (50-100%)
     trackLength: 80,
