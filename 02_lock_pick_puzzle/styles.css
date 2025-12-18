@@ -36,14 +36,14 @@ body {
     z-index: -1;
 }
 
-/* Texture overlay for main locker */
-.locker-container::before {
+/* Texture overlay for main locker - EXCLUDES sticky note */
+.locker-frame::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 150px); /* Adjust height to exclude sticky note area */
     background-image: url('texture.jpg');
     background-size: cover;
     background-position: center;
@@ -52,6 +52,7 @@ body {
     z-index: 1;
     border-radius: 8px;
     pointer-events: none;
+    margin-top: 150px; /* Start below sticky note area */
 }
 
 /* Main locker container */
@@ -83,6 +84,8 @@ body {
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 2px solid #555;
+    position: relative;
+    z-index: 3; /* Ensure it's above texture */
 }
 
 .locker-number-plate {
@@ -95,6 +98,8 @@ body {
         0 2px 4px rgba(0, 0, 0, 0.3);
     text-align: center;
     min-width: 150px;
+    position: relative;
+    z-index: 3;
 }
 
 .locker-number-plate .number {
@@ -125,45 +130,198 @@ body {
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Header */
-.metal-header {
+/* Sticky Note Container - Positioned above texture */
+.sticky-note-container {
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+    position: relative;
+    z-index: 4; /* Higher z-index to be above texture */
+}
+
+.sticky-note {
+    background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
+    width: 300px;
+    padding: 25px;
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.4),
+        0 2px 10px rgba(0, 0, 0, 0.3),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Paper texture background - ONLY uses note_texture.jpg */
+    background-image: url('note_texture.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: #fff9c4; /* Fallback color */
+    background-blend-mode: multiply;
+    z-index: 5; /* Ensure it's above everything */
+}
+
+.sticky-note:hover {
+    transform: rotate(-1deg) scale(1.02);
+    box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.5),
+        0 3px 15px rgba(0, 0, 0, 0.4),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sticky-note-pin {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    background: #e53935;
+    border-radius: 50%;
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.4),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.2),
+        inset 0 2px 3px rgba(255, 255, 255, 0.3);
+    z-index: 6;
+}
+
+.sticky-note-pin::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #b71c1c;
+    border-radius: 50%;
+}
+
+.sticky-note-content {
+    position: relative;
+    z-index: 1;
     text-align: center;
-    margin-bottom: 25px;
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+}
+
+.sticky-note-title {
+    font-family: 'Digital', sans-serif;
+    font-size: 1rem;
+    color: #5d4037;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.sticky-note-name {
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+}
+
+.sticky-note-subtitle {
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 20px;
+    font-style: italic;
+    border-bottom: 1px dashed #ccc;
     padding-bottom: 15px;
-    border-bottom: 1px solid #555;
+}
+
+.sticky-note-details {
+    text-align: left;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+}
+
+.sticky-note-detail {
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+    font-size: 0.95rem;
+    color: #444;
+    margin-bottom: 8px;
+    padding-left: 10px;
     position: relative;
 }
 
-.metal-header:after {
+.sticky-note-detail::before {
+    content: '•';
+    position: absolute;
+    left: -5px;
+    color: #ff9800;
+    font-size: 1.2rem;
+}
+
+.sticky-note-corners {
+    pointer-events: none;
+}
+
+.sticky-note-corners .corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.05) 50%);
+}
+
+.sticky-note-corners .top-left {
+    top: 0;
+    left: 0;
+    border-radius: 4px 0 0 0;
+}
+
+.sticky-note-corners .top-right {
+    top: 0;
+    right: 0;
+    border-radius: 0 4px 0 0;
+    transform: rotate(90deg);
+}
+
+.sticky-note-corners .bottom-left {
+    bottom: 0;
+    left: 0;
+    border-radius: 0 0 0 4px;
+    transform: rotate(-90deg);
+}
+
+.sticky-note-corners .bottom-right {
+    bottom: 0;
+    right: 0;
+    border-radius: 0 0 4px 0;
+    transform: rotate(180deg);
+}
+
+/* Paper texture effect - layered over the background image */
+.sticky-note::before {
     content: '';
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-    left: 10%;
-    width: 80%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #fff, transparent);
+    background-image: 
+        linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+        linear-gradient(#eee .1em, transparent .1em);
+    background-size: 100% 1.2em;
+    opacity: 0.15;
+    border-radius: 4px;
+    pointer-events: none;
+    mix-blend-mode: overlay;
 }
 
-h1 {
-    font-family: 'Digital', sans-serif;
-    font-size: 2.2rem;
-    color: #fff;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
-}
-
-.subtitle {
-    font-size: 1rem;
-    color: #aaa;
-    font-style: italic;
-    letter-spacing: 1px;
-}
-
-/* Game area layout */
+/* Game area layout - ensure it's above texture */
 .game-area {
     display: grid;
     grid-template-columns: 1fr;
     gap: 25px;
+    position: relative;
+    z-index: 3; /* Above texture */
 }
 
 .game-container {
@@ -715,6 +873,7 @@ h1 {
     color: #777;
     font-size: 0.9rem;
     position: relative;
+    z-index: 3; /* Above texture */
 }
 
 .rust-stain {
@@ -819,7 +978,12 @@ h1 {
         max-width: 160px;
     }
     
-    h1 {
+    .sticky-note {
+        width: 280px;
+        padding: 20px;
+    }
+    
+    .sticky-note-name {
         font-size: 1.8rem;
     }
     
@@ -835,6 +999,12 @@ h1 {
     
     .vent-slits {
         align-self: flex-end;
+    }
+    
+    /* Adjust texture overlay height for mobile */
+    .locker-frame::before {
+        height: calc(100% - 130px);
+        margin-top: 130px;
     }
 }
 
@@ -864,6 +1034,20 @@ h1 {
         font-size: 2rem;
     }
     
+    .sticky-note {
+        width: 250px;
+        padding: 15px;
+        transform: rotate(-1deg);
+    }
+    
+    .sticky-note-name {
+        font-size: 1.6rem;
+    }
+    
+    .sticky-note-detail {
+        font-size: 0.85rem;
+    }
+    
     .splash-content h2 {
         font-size: 1.8rem;
     }
@@ -880,4 +1064,15 @@ h1 {
         padding: 15px;
         border-width: 8px;
     }
+    
+    /* Adjust texture overlay height for smaller mobile */
+    .locker-frame::before {
+        height: calc(100% - 110px);
+        margin-top: 110px;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

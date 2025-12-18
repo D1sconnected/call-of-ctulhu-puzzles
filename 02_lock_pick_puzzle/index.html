@@ -15,6 +15,12 @@
             font-family: 'Digital';
             src: local('Arial Black'), local('Impact'), sans-serif;
         }
+        
+        /* Handwriting font for sticky note */
+        @font-face {
+            font-family: 'Handwriting';
+            src: local('Comic Sans MS'), local('Segoe Print'), cursive;
+        }
     </style>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -56,10 +62,23 @@
                 </div>
             </div>
 
-            <header class="metal-header">
-                <h1>⚙ RUSTY LOCKER COMBINATION</h1>
-                <p class="subtitle">Align the pins to crack the lock</p>
-            </header>
+            <!-- Sticky Note with Owner's Name -->
+            <div class="sticky-note-container">
+                <div class="sticky-note">
+                    <div class="sticky-note-pin"></div>
+                    <div class="sticky-note-content">
+                        <div class="sticky-note-title">⚡ LOCKER OWNER</div>
+                        <div class="sticky-note-name">ALEX J. CARTER</div>
+                        <div class="sticky-note-subtitle">Grade 12 • Physics Major</div>
+                    </div>
+                    <div class="sticky-note-corners">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                    </div>
+                </div>
+            </div>
 
             <main>
                 <div class="game-area">
