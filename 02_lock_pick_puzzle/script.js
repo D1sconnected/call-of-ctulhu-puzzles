@@ -219,7 +219,7 @@ function createBarrels() {
         
         gameState.barrels.push(barrel);
         
-        // Create barrel DOM element
+        // Create barrel DOM element with spring effect
         const barrelEl = document.createElement('div');
         barrelEl.className = 'barrel locked';
         barrelEl.dataset.id = i;
@@ -229,6 +229,14 @@ function createBarrels() {
                 <div class="barrel-number">${i}</div>
                 <div class="barrel-status">LOCKED</div>
             </div>
+            <div class="barrel-spring">
+                <div class="spring-coil"></div>
+                <div class="spring-coil"></div>
+                <div class="spring-coil"></div>
+                <div class="spring-coil"></div>
+                <div class="spring-coil"></div>
+            </div>
+            <div class="barrel-inner"></div>
             <div class="barrel-progress">
                 <div class="progress-fill"></div>
             </div>
