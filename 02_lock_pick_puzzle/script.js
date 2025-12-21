@@ -213,10 +213,6 @@ function createRealisticLock() {
     const pinChambers = document.createElement('div');
     pinChambers.className = 'pin-chambers';
     
-    // Create shear line
-    const shearLine = document.createElement('div');
-    shearLine.className = 'shear-line';
-    
     // Create lockpick tool
     const lockpickTool = document.createElement('div');
     lockpickTool.className = 'lockpick-tool';
@@ -247,7 +243,6 @@ function createRealisticLock() {
     
     lockCylinder.appendChild(keyway);
     lockCylinder.appendChild(pinChambers);
-    lockCylinder.appendChild(shearLine);
     lockCylinder.appendChild(lockpickTool);
     lockCylinder.appendChild(tensionWrench);
     
