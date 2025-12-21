@@ -330,7 +330,7 @@ function createRealisticLock() {
         
         const statusLabel = document.createElement('div');
         statusLabel.className = 'status-label';
-        statusLabel.textContent = `PIN ${i}`;
+        statusLabel.textContent = `ЯЧЕЙКА ${i}`;
         
         pinStatus.appendChild(statusLight);
         pinStatus.appendChild(statusLabel);
