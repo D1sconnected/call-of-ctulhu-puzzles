@@ -2,14 +2,14 @@
 // GAME CONFIGURATION - EDIT THESE VALUES
 // ============================================
 const GAME_CONFIG = {
-    // Number of lock barrels (3-5)
-    barrelCount: 4,
+    // Number of lock pins (3-5)
+    pinCount: 4,
     
     // Starting number of lockpicks
     initialLockpicks: 3,
     
-    // Height of green target zone in pixels (vertical lockpick)
-    targetZoneHeight: 50,
+    // Width of green target zone in pixels (horizontal position indicator)
+    targetZoneWidth: 40,
     
     // Possible speeds for lockpick movement (lower = slower)
     speedVariants: [1.2, 2.0, 2.3, 1.7],
@@ -17,7 +17,7 @@ const GAME_CONFIG = {
     // How far the lockpick travels (50-100%)
     trackLength: 80,
     
-    // Where green zones can appear (avoid edges)
+    // Where target zones can appear (avoid edges)
     targetPositionMin: 30,  // Minimum percentage
     targetPositionMax: 70   // Maximum percentage
 };
@@ -48,13 +48,9 @@ function initGame() {
         initGameState();
         console.log('Game state initialized');
         
-        // Create barrels based on config
-        createBarrels();
-        console.log('Barrels created');
-        
-        // Create vertical lockpick tracks
-        createLockpickTracks();
-        console.log('Lockpick tracks created');
+        // Create realistic lock mechanism
+        createRealisticLock();
+        console.log('Realistic lock created');
         
         // Setup event listeners
         setupEventListeners();
@@ -94,7 +90,6 @@ function initDOMElements() {
     
     // Log found elements for debugging
     console.log('DOM elements found:', {
-        lockBarrels: !!lockBarrels,
         currentBarrelEl: !!currentBarrelEl,
         lockpicksCount: !!lockpicksCount,
         lockpicksContainer: !!lockpicksContainer,
@@ -140,19 +135,17 @@ function initGameState() {
     const settings = validateConfig(GAME_CONFIG);
     
     gameState = {
-        barrels: [],
-        lockpickTracks: [], // Store lockpick track elements
-        currentBarrel: 1,
+        pins: [], // Now called pins instead of barrels
+        currentPin: 1,
         lockpicks: settings.initialLockpicks,
         isGameActive: true,
         isLockpickMoving: false,
         currentSpeed: 0,
-        lockpickPosition: 0, // Now represents vertical position (0-100%)
+        lockpickPosition: 0, // Represents horizontal position (0-100%)
         animationId: null,
         speedVariants: settings.speedVariants,
         trackLength: settings.trackLength,
-        targetZoneHalfHeight: settings.targetZoneHeight / 2,
-        containerHeight: 250, // Default height, will be updated
+        targetZoneHalfWidth: settings.targetZoneWidth / 2,
         settings: settings
     };
     
@@ -163,14 +156,14 @@ function initGameState() {
 function validateConfig(config) {
     const validated = { ...config };
     
-    // Ensure barrelCount is between 3 and 5
-    validated.barrelCount = Math.max(3, Math.min(5, Number(validated.barrelCount) || 5));
+    // Ensure pinCount is between 3 and 5
+    validated.pinCount = Math.max(3, Math.min(5, Number(validated.pinCount) || 5));
     
     // Ensure initialLockpicks is positive
     validated.initialLockpicks = Math.max(1, Number(validated.initialLockpicks) || 10);
     
-    // Ensure targetZoneHeight is reasonable
-    validated.targetZoneHeight = Math.max(30, Math.min(100, Number(validated.targetZoneHeight) || 50));
+    // Ensure targetZoneWidth is reasonable
+    validated.targetZoneWidth = Math.max(20, Math.min(60, Number(validated.targetZoneWidth) || 40));
     
     // Ensure speedVariants is an array with valid numbers
     if (!Array.isArray(validated.speedVariants)) {
@@ -188,156 +181,196 @@ function validateConfig(config) {
     return validated;
 }
 
-// Create lock barrels based on config
-function createBarrels() {
-    if (!lockBarrels) {
-        console.error('lockBarrels element not found!');
+// Create realistic lock mechanism
+function createRealisticLock() {
+    const lockSection = document.getElementById('realLockSection');
+    if (!lockSection) {
+        console.error('realLockSection element not found!');
         return;
     }
     
-    lockBarrels.innerHTML = '';
-    gameState.barrels = [];
+    lockSection.innerHTML = '';
+    gameState.pins = [];
     
-    const barrelCount = gameState.settings.barrelCount;
+    const pinCount = gameState.settings.pinCount;
     const targetMin = gameState.settings.targetPositionMin;
     const targetMax = gameState.settings.targetPositionMax;
     const targetRange = targetMax - targetMin;
     
-    for (let i = 1; i <= barrelCount; i++) {
+    // Create lock body
+    const lockBody = document.createElement('div');
+    lockBody.className = 'lock-body';
+    
+    // Create lock cylinder
+    const lockCylinder = document.createElement('div');
+    lockCylinder.className = 'lock-cylinder';
+    
+    // Create keyway
+    const keyway = document.createElement('div');
+    keyway.className = 'keyway';
+    
+    // Create pin chambers
+    const pinChambers = document.createElement('div');
+    pinChambers.className = 'pin-chambers';
+    
+    // Create shear line
+    const shearLine = document.createElement('div');
+    shearLine.className = 'shear-line';
+    
+    // Create lockpick tool
+    const lockpickTool = document.createElement('div');
+    lockpickTool.className = 'lockpick-tool';
+    lockpickTool.id = 'lockpickTool';
+    
+    // Create tension wrench
+    const tensionWrench = document.createElement('div');
+    tensionWrench.className = 'tension-wrench';
+    
+    // Create lockpick position indicator
+    const positionIndicator = document.createElement('div');
+    positionIndicator.className = 'lockpick-position-indicator';
+    positionIndicator.id = 'positionIndicator';
+    
+    // Create position slider inside indicator
+    const positionSlider = document.createElement('div');
+    positionSlider.className = 'position-slider';
+    positionSlider.id = 'positionSlider';
+    
+    // Create target zone
+    const targetZone = document.createElement('div');
+    targetZone.className = 'target-zone';
+    targetZone.id = 'targetZone';
+    
+    // Assemble lock
+    positionIndicator.appendChild(targetZone);
+    positionIndicator.appendChild(positionSlider);
+    
+    lockCylinder.appendChild(keyway);
+    lockCylinder.appendChild(pinChambers);
+    lockCylinder.appendChild(shearLine);
+    lockCylinder.appendChild(lockpickTool);
+    lockCylinder.appendChild(tensionWrench);
+    
+    lockBody.appendChild(lockCylinder);
+    lockBody.appendChild(positionIndicator);
+    
+    // Create pin chambers based on pin count
+    for (let i = 1; i <= pinCount; i++) {
         // Generate random target position within configured range
-        const barrel = {
+        const pin = {
             id: i,
             isUnlocked: false,
             targetPosition: Math.random() * targetRange + targetMin,
-            currentProgress: 0,
-            progressElement: null,
-            barrelElement: null,
-            lockpickElement: null,
-            targetZoneElement: null,
-            trackElement: null
+            driverPinElement: null,
+            keyPinElement: null,
+            pinChamberElement: null,
+            statusLightElement: null
         };
         
-        gameState.barrels.push(barrel);
+        gameState.pins.push(pin);
         
-        // Create barrel DOM element with spring effect
-        const barrelEl = document.createElement('div');
-        barrelEl.className = 'barrel locked';
-        barrelEl.dataset.id = i;
+        // Create pin chamber
+        const pinChamber = document.createElement('div');
+        pinChamber.className = 'pin-chamber';
+        pinChamber.dataset.id = i;
         
-        barrelEl.innerHTML = `
-            <div class="barrel-header">
-                <div class="barrel-number">${i}</div>
-                <div class="barrel-status">LOCKED</div>
-            </div>
-            <div class="barrel-spring">
-                <div class="spring-coil"></div>
-                <div class="spring-coil"></div>
-                <div class="spring-coil"></div>
-                <div class="spring-coil"></div>
-                <div class="spring-coil"></div>
-            </div>
-            <div class="barrel-inner"></div>
-            <div class="barrel-progress">
-                <div class="progress-fill"></div>
-            </div>
-        `;
+        // Create label
+        const pinLabel = document.createElement('div');
+        pinLabel.className = 'pin-label';
+        pinLabel.textContent = i;
         
-        lockBarrels.appendChild(barrelEl);
+        // Create chamber tube
+        const chamberTube = document.createElement('div');
+        chamberTube.className = 'chamber-tube';
+        
+        // Create driver pin (top pin)
+        const driverPin = document.createElement('div');
+        driverPin.className = 'driver-pin';
+        driverPin.dataset.id = i;
+        driverPin.style.height = `${pin.targetPosition}%`;
+        
+        // Create spring
+        const spring = document.createElement('div');
+        spring.className = 'pin-spring';
+        
+        // Create spring coils
+        for (let j = 0; j < 6; j++) {
+            const coil = document.createElement('div');
+            coil.className = 'spring-coil-vertical';
+            spring.appendChild(coil);
+        }
+        
+        // Create key pin (bottom pin)
+        const keyPin = document.createElement('div');
+        keyPin.className = 'key-pin';
+        keyPin.dataset.id = i;
+        keyPin.style.height = `${100 - pin.targetPosition}%`;
+        
+        // Assemble pin chamber
+        chamberTube.appendChild(driverPin);
+        chamberTube.appendChild(spring);
+        chamberTube.appendChild(keyPin);
+        
+        pinChamber.appendChild(pinLabel);
+        pinChamber.appendChild(chamberTube);
+        pinChambers.appendChild(pinChamber);
         
         // Store references
-        barrel.progressElement = barrelEl.querySelector('.progress-fill');
-        barrel.barrelElement = barrelEl;
-        
-        if (DEBUG) {
-            console.log(`Barrel ${i} created with target at ${barrel.targetPosition.toFixed(1)}%`);
-        }
+        pin.driverPinElement = driverPin;
+        pin.keyPinElement = keyPin;
+        pin.pinChamberElement = pinChamber;
     }
     
-    // Update rules text with current barrel count
-    updateRulesText(barrelCount);
+    // Create lock status indicator
+    const statusIndicator = document.createElement('div');
+    statusIndicator.className = 'lock-status-indicator';
     
-    // Set current barrel visual
-    updateCurrentBarrelVisual();
-}
-
-// Create vertical lockpick tracks under each barrel
-function createLockpickTracks() {
-    if (!lockpicksContainer) {
-        console.error('lockpicksContainer element not found!');
-        return;
+    for (let i = 1; i <= pinCount; i++) {
+        const pinStatus = document.createElement('div');
+        pinStatus.className = 'pin-status';
+        
+        const statusLight = document.createElement('div');
+        statusLight.className = 'status-light';
+        statusLight.dataset.id = i;
+        
+        const statusLabel = document.createElement('div');
+        statusLabel.className = 'status-label';
+        statusLabel.textContent = `PIN ${i}`;
+        
+        pinStatus.appendChild(statusLight);
+        pinStatus.appendChild(statusLabel);
+        statusIndicator.appendChild(pinStatus);
+        
+        // Store reference
+        gameState.pins[i - 1].statusLightElement = statusLight;
     }
     
-    lockpicksContainer.innerHTML = '';
-    gameState.lockpickTracks = [];
+    // Assemble lock section
+    lockSection.appendChild(lockBody);
+    lockSection.appendChild(statusIndicator);
     
-    const barrelCount = gameState.settings.barrelCount;
-    const containerHeight = lockpicksContainer.offsetHeight;
-    gameState.containerHeight = containerHeight;
+    // Update rules text with current pin count
+    updateRulesText(pinCount);
     
-    console.log('Lockpick container height:', containerHeight);
+    // Set current pin visual
+    updateCurrentPinVisual();
     
-    for (let i = 1; i <= barrelCount; i++) {
-        const barrel = gameState.barrels[i - 1];
-        
-        // Create lockpick track container
-        const trackContainer = document.createElement('div');
-        trackContainer.className = 'lockpick-track';
-        trackContainer.dataset.barrelId = i;
-        
-        // Add connector line
-        const connectorLine = document.createElement('div');
-        connectorLine.className = 'connector-line';
-        trackContainer.appendChild(connectorLine);
-        
-        // Create lockpick visual track
-        const trackVisual = document.createElement('div');
-        trackVisual.className = 'lockpick-visual';
-        
-        // Create center line
-        const centerLine = document.createElement('div');
-        centerLine.className = 'lockpick-line';
-        trackVisual.appendChild(centerLine);
-        
-        // Create lockpick element (will move vertically)
-        const lockpickEl = document.createElement('div');
-        lockpickEl.className = 'lockpick';
-        lockpickEl.dataset.barrelId = i;
-        trackVisual.appendChild(lockpickEl);
-        
-        // Create target zone
-        const targetZoneEl = document.createElement('div');
-        targetZoneEl.className = 'lockpick-target';
-        targetZoneEl.dataset.barrelId = i;
-        trackVisual.appendChild(targetZoneEl);
-        
-        // Set target zone height from config
-        targetZoneEl.style.height = `${gameState.settings.targetZoneHeight}px`;
-        
-        trackContainer.appendChild(trackVisual);
-        lockpicksContainer.appendChild(trackContainer);
-        
-        // Store references
-        barrel.lockpickElement = lockpickEl;
-        barrel.targetZoneElement = targetZoneEl;
-        barrel.trackElement = trackContainer;
-        
-        gameState.lockpickTracks.push(trackContainer);
-        
-        // Position target zone
-        updateTargetZonePosition(i, barrel.targetPosition);
-        
-        if (DEBUG) {
-            console.log(`Lockpick track ${i} created with height ${containerHeight}px`);
-            console.log(`Target zone height: ${gameState.settings.targetZoneHeight}px`);
-        }
+    // Initialize target zone position
+    updateTargetZonePosition();
+    
+    if (DEBUG) {
+        console.log('Realistic lock created with', pinCount, 'pins');
+        gameState.pins.forEach(pin => {
+            console.log(`Pin ${pin.id} target at ${pin.targetPosition.toFixed(1)}%`);
+        });
     }
 }
 
-// Update rules text with current barrel count
-function updateRulesText(barrelCount) {
+// Update rules text with current pin count
+function updateRulesText(pinCount) {
     const rulesList = document.querySelector('.rules ul');
     if (rulesList && rulesList.firstElementChild) {
-        rulesList.firstElementChild.textContent = `Unlock all ${barrelCount} barrels in sequence`;
+        rulesList.firstElementChild.textContent = `Set all ${pinCount} pins at shear line`;
     }
 }
 
@@ -396,19 +429,24 @@ function handleKeyPress(e) {
     }
 }
 
-// Update visual for current barrel
-function updateCurrentBarrelVisual() {
-    // Remove current class from all barrels
-    document.querySelectorAll('.barrel').forEach(barrel => {
-        barrel.classList.remove('current');
+// Update visual for current pin
+function updateCurrentPinVisual() {
+    // Remove current class from all pins
+    document.querySelectorAll('.pin-chamber').forEach(chamber => {
+        chamber.classList.remove('current');
     });
     
-    // Add current class to current barrel if game is active
-    if (gameState.isGameActive && gameState.currentBarrel <= gameState.settings.barrelCount) {
-        const currentBarrelEl = document.querySelector(`.barrel[data-id="${gameState.currentBarrel}"]`);
-        if (currentBarrelEl) {
-            currentBarrelEl.classList.add('current');
-            console.log('Current barrel set to:', gameState.currentBarrel);
+    document.querySelectorAll('.status-light').forEach(light => {
+        light.classList.remove('current');
+    });
+    
+    // Add current class to current pin if game is active
+    if (gameState.isGameActive && gameState.currentPin <= gameState.settings.pinCount) {
+        const currentPin = gameState.pins[gameState.currentPin - 1];
+        if (currentPin) {
+            currentPin.pinChamberElement.classList.add('current');
+            currentPin.statusLightElement.classList.add('current');
+            console.log('Current pin set to:', gameState.currentPin);
         }
     }
 }
@@ -433,7 +471,7 @@ function startLockpick() {
     console.log('startLockpick called. State:', {
         isGameActive: gameState.isGameActive,
         isLockpickMoving: gameState.isLockpickMoving,
-        currentBarrel: gameState.currentBarrel,
+        currentPin: gameState.currentPin,
         lockpicks: gameState.lockpicks
     });
     
@@ -447,15 +485,15 @@ function startLockpick() {
         return;
     }
     
-    const barrel = gameState.barrels[gameState.currentBarrel - 1];
+    const pin = gameState.pins[gameState.currentPin - 1];
     
-    if (!barrel) {
-        console.error('No barrel found for currentBarrel:', gameState.currentBarrel);
+    if (!pin) {
+        console.error('No pin found for currentPin:', gameState.currentPin);
         return;
     }
     
-    if (barrel.isUnlocked) {
-        console.log('Barrel already unlocked');
+    if (pin.isUnlocked) {
+        console.log('Pin already unlocked');
         return; // Shouldn't happen with auto-selection
     }
     
@@ -478,26 +516,25 @@ function startLockpick() {
     gameState.isLockpickMoving = true;
     gameState.lockpickPosition = 0;
     
-    // Update barrel status
-    barrel.barrelElement.classList.add('progressing');
-    barrel.barrelElement.querySelector('.barrel-status').textContent = 'IN PROGRESS';
+    // Update lock visual for picking active
+    setPickingActive(true);
     
-    // Set target zone for current barrel
-    updateTargetZonePosition(gameState.currentBarrel, barrel.targetPosition);
+    // Update target zone for current pin
+    updateTargetZonePosition();
     
     console.log('Starting movement animation...');
     // Start movement animation
     moveLockpick();
 }
 
-// Move the lockpick (vertical movement)
+// Move the lockpick (horizontal movement)
 function moveLockpick() {
     if (!gameState.isLockpickMoving) {
         console.log('moveLockpick called but lockpick not moving');
         return;
     }
     
-    // Update lockpick position (vertical)
+    // Update lockpick position (horizontal)
     gameState.lockpickPosition += gameState.currentSpeed;
     
     // Check if reached the end (trackLength%)
@@ -506,8 +543,6 @@ function moveLockpick() {
         
         // Update visuals
         updateLockpickVisualPosition();
-        const barrel = gameState.barrels[gameState.currentBarrel - 1];
-        barrel.progressElement.style.width = `${gameState.lockpickPosition}%`;
         
         console.log('Lockpick reached end of track at', gameState.lockpickPosition + '%');
         
@@ -519,39 +554,52 @@ function moveLockpick() {
     // Update lockpick visual position
     updateLockpickVisualPosition();
     
-    // Update barrel progress visual for current barrel
-    const barrel = gameState.barrels[gameState.currentBarrel - 1];
-    barrel.progressElement.style.width = `${gameState.lockpickPosition}%`;
-    
     // Continue animation
     gameState.animationId = requestAnimationFrame(() => moveLockpick());
 }
 
-// Update lockpick visual position (vertical)
+// Update lockpick visual position
 function updateLockpickVisualPosition() {
-    const barrel = gameState.barrels[gameState.currentBarrel - 1];
-    if (!barrel || !barrel.lockpickElement) return;
+    const positionSlider = document.getElementById('positionSlider');
+    const lockpickTool = document.getElementById('lockpickTool');
     
-    // Calculate pixel position based on container height
-    const pixelPosition = (gameState.lockpickPosition / 100) * gameState.containerHeight;
-    barrel.lockpickElement.style.top = `${pixelPosition}px`;
+    if (!positionSlider || !lockpickTool) return;
+    
+    // Calculate pixel position based on indicator width (180px)
+    const sliderWidth = 180;
+    const sliderPosition = (gameState.lockpickPosition / 100) * sliderWidth;
+    positionSlider.style.left = `${sliderPosition - 15}px`; // Center the slider (30px wide)
+    
+    // Update lockpick tool angle (simulating picking action)
+    const angle = (gameState.lockpickPosition - 50) / 50 * 15; // ±15 degrees
+    lockpickTool.style.transform = `rotate(${angle}deg)`;
     
     if (DEBUG && Math.floor(gameState.lockpickPosition) % 20 === 0) {
-        console.log('Lockpick position:', gameState.lockpickPosition.toFixed(1) + '%', 'pixels:', pixelPosition.toFixed(1));
+        console.log('Lockpick position:', gameState.lockpickPosition.toFixed(1) + '%', 'pixels:', sliderPosition.toFixed(1));
     }
 }
 
-// Update target zone position in lockpick visual (vertical)
-function updateTargetZonePosition(barrelId, position) {
-    const barrel = gameState.barrels[barrelId - 1];
-    if (!barrel || !barrel.targetZoneElement) return;
+// Update target zone position
+function updateTargetZonePosition() {
+    const targetZone = document.getElementById('targetZone');
+    if (!targetZone) return;
     
-    // Calculate pixel position based on container height
-    const pixelPosition = (position / 100) * gameState.containerHeight;
-    barrel.targetZoneElement.style.top = `${pixelPosition}px`;
+    const pin = gameState.pins[gameState.currentPin - 1];
+    if (!pin) return;
+    
+    // Calculate pixel position based on indicator width (180px)
+    const sliderWidth = 180;
+    const targetPosition = (pin.targetPosition / 100) * sliderWidth;
+    const targetZoneHalfWidth = gameState.targetZoneHalfWidth;
+    
+    const targetMin = targetPosition - targetZoneHalfWidth;
+    const targetMax = targetPosition + targetZoneHalfWidth;
+    
+    targetZone.style.left = `${targetMin}px`;
+    targetZone.style.width = `${targetMax - targetMin}px`;
     
     if (DEBUG) {
-        console.log(`Target zone ${barrelId} updated to:`, position.toFixed(1) + '%', 'pixels:', pixelPosition.toFixed(1));
+        console.log(`Target zone updated to:`, targetPosition.toFixed(1) + 'px', 'range:', `${targetMin.toFixed(1)}-${targetMax.toFixed(1)}px`);
     }
 }
 
@@ -569,10 +617,10 @@ function fixLockpick() {
         return;
     }
     
-    const barrel = gameState.barrels[gameState.currentBarrel - 1];
+    const pin = gameState.pins[gameState.currentPin - 1];
     
-    if (!barrel) {
-        console.error('No barrel found');
+    if (!pin) {
+        console.error('No pin found');
         return;
     }
     
@@ -580,20 +628,20 @@ function fixLockpick() {
     playSound(soundLockpickFix, 0.4);
     
     // Get ACTUAL pixel positions for accurate detection
-    const containerHeight = gameState.containerHeight;
-    const lockpickPixelPosition = (gameState.lockpickPosition / 100) * containerHeight;
-    const targetZonePixelPosition = (barrel.targetPosition / 100) * containerHeight;
+    const sliderWidth = 180;
+    const lockpickPixelPosition = (gameState.lockpickPosition / 100) * sliderWidth;
+    const targetZonePixelPosition = (pin.targetPosition / 100) * sliderWidth;
     
-    // Get target zone height from config
-    const targetZonePixelHeight = gameState.settings.targetZoneHeight;
-    const targetZoneHalfPixelHeight = targetZonePixelHeight / 2;
+    // Get target zone width from config
+    const targetZonePixelWidth = gameState.settings.targetZoneWidth;
+    const targetZoneHalfPixelWidth = targetZonePixelWidth / 2;
     
-    // Calculate the center of the lockpick (8px from top edge since lockpick is 16px high)
-    const lockpickCenter = lockpickPixelPosition + 8;
+    // Calculate the center of the lockpick slider (15px from left edge since slider is 30px wide)
+    const lockpickCenter = lockpickPixelPosition;
     
     // Calculate target zone boundaries
-    const minTarget = targetZonePixelPosition - targetZoneHalfPixelHeight;
-    const maxTarget = targetZonePixelPosition + targetZoneHalfPixelHeight;
+    const minTarget = targetZonePixelPosition - targetZoneHalfPixelWidth;
+    const maxTarget = targetZonePixelPosition + targetZoneHalfPixelWidth;
     
     // Check if lockpick center is within target zone
     const isInTargetZone = lockpickCenter >= minTarget && lockpickCenter <= maxTarget;
@@ -602,9 +650,9 @@ function fixLockpick() {
         lockpickPosition: gameState.lockpickPosition.toFixed(1) + '%',
         lockpickPixels: lockpickPixelPosition.toFixed(1) + 'px',
         lockpickCenter: lockpickCenter.toFixed(1) + 'px',
-        targetPosition: barrel.targetPosition.toFixed(1) + '%',
+        targetPosition: pin.targetPosition.toFixed(1) + '%',
         targetPixels: targetZonePixelPosition.toFixed(1) + 'px',
-        targetZoneHeight: targetZonePixelHeight + 'px',
+        targetZoneWidth: targetZonePixelWidth + 'px',
         targetZone: `[${minTarget.toFixed(1)}px - ${maxTarget.toFixed(1)}px]`,
         isInTargetZone: isInTargetZone
     });
@@ -613,26 +661,29 @@ function fixLockpick() {
     stopLockpickMovement(false);
     
     if (isInTargetZone) {
-        // SUCCESS - barrel unlocked!
-        console.log('SUCCESS! Barrel unlocked');
+        // SUCCESS - pin unlocked!
+        console.log('SUCCESS! Pin unlocked');
         playSound(soundBarrelUnlock, 0.5);
+        showSuccessFlash();
         
-        barrel.isUnlocked = true;
+        pin.isUnlocked = true;
         
-        barrel.barrelElement.classList.remove('progressing', 'locked');
-        barrel.barrelElement.classList.add('unlocked');
-        barrel.barrelElement.querySelector('.barrel-status').textContent = 'UNLOCKED';
+        pin.pinChamberElement.classList.remove('current');
+        pin.pinChamberElement.classList.add('unlocked');
+        pin.statusLightElement.classList.remove('current');
+        pin.statusLightElement.classList.add('unlocked');
         
-        // Move to next barrel
-        if (gameState.currentBarrel < gameState.settings.barrelCount) {
-            gameState.currentBarrel++;
-            currentBarrelEl.textContent = gameState.currentBarrel;
-            updateCurrentBarrelVisual();
+        // Move to next pin
+        if (gameState.currentPin < gameState.settings.pinCount) {
+            gameState.currentPin++;
+            currentBarrelEl.textContent = gameState.currentPin;
+            updateCurrentPinVisual();
+            updateTargetZonePosition();
             
-            console.log('Moving to next barrel:', gameState.currentBarrel);
+            console.log('Moving to next pin:', gameState.currentPin);
         } else {
-            // All barrels unlocked - WIN!
-            console.log('ALL BARRELS UNLOCKED - VICTORY!');
+            // All pins unlocked - WIN!
+            console.log('ALL PINS UNLOCKED - VICTORY!');
             showWinScreen();
         }
     } else {
@@ -645,9 +696,9 @@ function fixLockpick() {
         // Play break sound
         playSound(soundLockpickBreak, 0.4);
         
-        // RESET ALL BARRELS on failed attempt
-        console.log('Resetting all barrels...');
-        resetAllBarrels();
+        // RESET ALL PINS on failed attempt
+        console.log('Resetting all pins...');
+        resetAllPins();
         
         // Check if out of lockpicks
         if (gameState.lockpicks <= 0) {
@@ -657,68 +708,86 @@ function fixLockpick() {
     }
 }
 
+// Show success flash effect
+function showSuccessFlash() {
+    const lockBody = document.querySelector('.lock-body');
+    if (!lockBody) return;
+    
+    const flash = document.createElement('div');
+    flash.className = 'success-flash';
+    
+    lockBody.appendChild(flash);
+    
+    // Remove flash after animation
+    setTimeout(() => {
+        if (flash.parentNode) {
+            flash.parentNode.removeChild(flash);
+        }
+    }, 500);
+}
+
 // Stop lockpick movement
 function stopLockpickMovement(reachedEnd) {
     console.log('stopLockpickMovement called, reachedEnd:', reachedEnd);
     
     gameState.isLockpickMoving = false;
+    setPickingActive(false);
     
     if (gameState.animationId) {
         cancelAnimationFrame(gameState.animationId);
         gameState.animationId = null;
     }
     
-    // Reset progress bar
-    const barrel = gameState.barrels[gameState.currentBarrel - 1];
-    if (barrel && barrel.barrelElement && !barrel.isUnlocked) {
-        barrel.barrelElement.classList.remove('progressing');
-        barrel.progressElement.style.width = '0%';
-        
-        if (reachedEnd) {
-            // Lockpick reached end without ENTER press - no penalty, just reset
-            barrel.barrelElement.querySelector('.barrel-status').textContent = 'READY';
-            console.log('Lockpick reached end, barrel reset to READY');
-        }
+    // Reset lockpick position to start
+    const positionSlider = document.getElementById('positionSlider');
+    if (positionSlider) {
+        positionSlider.style.left = '0px';
     }
     
-    // Reset lockpick position to top
-    if (barrel && barrel.lockpickElement) {
-        barrel.lockpickElement.style.top = '0px';
+    const lockpickTool = document.getElementById('lockpickTool');
+    if (lockpickTool) {
+        lockpickTool.style.transform = 'rotate(0deg)';
     }
 }
 
-// Reset ALL barrels (on failure)
-function resetAllBarrels() {
-    gameState.currentBarrel = 1;
+// Set picking active state for animations
+function setPickingActive(isActive) {
+    const lockBody = document.querySelector('.lock-body');
+    if (lockBody) {
+        lockBody.classList.toggle('picking-active', isActive);
+    }
+}
+
+// Reset ALL pins (on failure)
+function resetAllPins() {
+    gameState.currentPin = 1;
     currentBarrelEl.textContent = '1';
     
     const targetMin = gameState.settings.targetPositionMin;
     const targetMax = gameState.settings.targetPositionMax;
     const targetRange = targetMax - targetMin;
     
-    // Reset all barrels
-    gameState.barrels.forEach(barrel => {
-        barrel.isUnlocked = false;
+    // Reset all pins
+    gameState.pins.forEach(pin => {
+        pin.isUnlocked = false;
         
-        // Update barrel element
-        barrel.barrelElement.classList.remove('unlocked', 'progressing');
-        barrel.barrelElement.classList.add('locked');
-        barrel.barrelElement.querySelector('.barrel-status').textContent = 'LOCKED';
+        // Update pin element
+        pin.pinChamberElement.classList.remove('unlocked', 'current');
+        pin.statusLightElement.classList.remove('unlocked', 'current');
         
-        // Generate new target position for each barrel
-        barrel.targetPosition = Math.random() * targetRange + targetMin;
+        // Generate new target position for each pin
+        pin.targetPosition = Math.random() * targetRange + targetMin;
         
-        // Update target zone in lockpick track
-        updateTargetZonePosition(barrel.id, barrel.targetPosition);
-        
-        // Reset lockpick position
-        if (barrel.lockpickElement) {
-            barrel.lockpickElement.style.top = '0px';
-        }
+        // Update pin heights
+        pin.driverPinElement.style.height = `${pin.targetPosition}%`;
+        pin.keyPinElement.style.height = `${100 - pin.targetPosition}%`;
     });
     
-    // Update current barrel visual
-    updateCurrentBarrelVisual();
+    // Update current pin visual
+    updateCurrentPinVisual();
+    
+    // Update target zone position
+    updateTargetZonePosition();
 }
 
 // Show win screen

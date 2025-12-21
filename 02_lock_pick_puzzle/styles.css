@@ -315,319 +315,375 @@ body {
     mix-blend-mode: overlay;
 }
 
-/* Game area layout - ensure it's above texture */
-.game-area {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 25px;
+/* ============================================ */
+/* REALISTIC LOCK MECHANISM STYLES */
+/* ============================================ */
+
+.real-lock-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+/* Lock body styling */
+.lock-body {
+    width: 300px;
+    height: 180px;
+    background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+    border-radius: 8px;
     position: relative;
-    z-index: 3; /* Above texture */
-}
-
-.game-container {
+    border: 1px solid #444;
+    box-shadow: 
+        inset 0 0 15px rgba(0, 0, 0, 0.7),
+        0 5px 20px rgba(0, 0, 0, 0.4);
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-}
-
-/* Barrels and lockpicks container */
-.barrels-lockpicks-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
+    justify-content: center;
     align-items: center;
 }
 
-/* Horizontal barrels container */
-.lock-barrels {
+/* Lock cylinder */
+.lock-cylinder {
+    width: 220px;
+    height: 100px;
+    background: linear-gradient(135deg, #555 0%, #444 100%);
+    border-radius: 50px;
+    position: relative;
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 20px;
-    width: 100%;
-}
-
-.metal-panel {
-    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
-    border-radius: 6px;
-    border: 1px solid #555;
-    position: relative;
+    border: 2px solid #666;
     box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.8),
-        0 5px 15px rgba(0, 0, 0, 0.3);
+        inset 0 0 10px rgba(0, 0, 0, 0.8),
+        0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.metal-bolt {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: #666;
-    border-radius: 50%;
-    box-shadow: 
-        inset 0 1px 2px rgba(255, 255, 255, 0.1),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.5),
-        0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.metal-bolt.small {
-    width: 8px;
-    height: 8px;
-    top: 8px;
-    right: 8px;
-}
-
-/* Updated Barrel Styles - More like actual barrels with spring effect */
-.barrel {
-    flex: 1;
-    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
-    border-radius: 6px;
-    padding: 20px 15px;
-    border: 1px solid #555;
-    transition: all 0.3s ease;
-    min-height: 120px;
-    max-width: 180px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.8);
-    transform-style: preserve-3d;
-}
-
-/* Barrel spring effect container */
-.barrel-spring {
+/* Keyway slot */
+.keyway {
+    width: 180px;
+    height: 10px;
+    background: linear-gradient(90deg, #222, #333, #222);
+    border-radius: 0 0 5px 5px;
     position: absolute;
     top: 50%;
-    left: 0;
-    width: 100%;
-    height: 40px;
     transform: translateY(-50%);
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
+    border: 1px solid #444;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-/* Spring coils */
-.spring-coil {
-    position: absolute;
-    width: 100%;
-    height: 8px;
-    background: linear-gradient(90deg, transparent, #666, transparent);
-    border-radius: 4px;
-    animation: springPulse 2s infinite ease-in-out;
-}
-
-.spring-coil:nth-child(1) { top: 0; animation-delay: 0s; }
-.spring-coil:nth-child(2) { top: 8px; animation-delay: 0.1s; }
-.spring-coil:nth-child(3) { top: 16px; animation-delay: 0.2s; }
-.spring-coil:nth-child(4) { top: 24px; animation-delay: 0.3s; }
-.spring-coil:nth-child(5) { top: 32px; animation-delay: 0.4s; }
-
-@keyframes springPulse {
-    0%, 100% { 
-        opacity: 0.3;
-        transform: scaleX(0.95);
-    }
-    50% { 
-        opacity: 0.7;
-        transform: scaleX(1);
-    }
-}
-
-/* Barrel inner cylinder */
-.barrel-inner {
-    position: relative;
-    width: 100%;
-    height: 40px;
-    background: linear-gradient(90deg, #444, #555, #444);
-    border-radius: 4px;
-    margin: 10px 0;
-    overflow: hidden;
-    border: 1px solid #666;
-    box-shadow: 
-        inset 0 2px 4px rgba(0, 0, 0, 0.5),
-        0 1px 2px rgba(255, 255, 255, 0.1);
-}
-
-.barrel.current {
-    border-color: #fff;
-    box-shadow: 
-        0 0 25px rgba(255, 255, 255, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
-}
-
-/* Enhanced spring animation when current */
-.barrel.current .spring-coil {
-    animation: springActive 1s infinite ease-in-out;
-    background: linear-gradient(90deg, transparent, #fff, transparent);
-}
-
-@keyframes springActive {
-    0%, 100% { 
-        opacity: 0.5;
-        transform: scaleX(0.9);
-    }
-    50% { 
-        opacity: 1;
-        transform: scaleX(1.1);
-    }
-}
-
-.barrel.unlocked {
-    border-color: #4caf50;
-    background: linear-gradient(135deg, #2d3a2d 0%, #1a2a1a 100%);
-}
-
-.barrel.locked {
-    opacity: 0.9;
-}
-
-.barrel.unlocked::after {
-    content: "✓";
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    color: #4caf50;
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-.barrel-header {
-    text-align: center;
-    margin-bottom: 15px;
-    z-index: 2;
-    position: relative;
-}
-
-.barrel-number {
-    font-family: 'Digital', sans-serif;
-    font-size: 1.8rem;
-    color: #fff;
-    font-weight: bold;
-    margin-bottom: 5px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.barrel-status {
-    font-size: 0.9rem;
-    padding: 4px 10px;
-    border-radius: 15px;
-    background: #444;
-    font-weight: 600;
-    display: inline-block;
-    border: 1px solid #555;
-}
-
-.barrel.locked .barrel-status {
-    color: #ff6b6b;
-    background: #4a2a2a;
-}
-
-.barrel.unlocked .barrel-status {
-    color: #4caf50;
-    background: #1a4a2a;
-}
-
-.barrel.current .barrel-status {
-    color: #fff;
-    animation: pulse 1.5s infinite;
-    background: #555;
-}
-
-.barrel.progressing .barrel-status {
-    color: #6a9ac8;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.6; }
-    100% { opacity: 1; }
-}
-
-.barrel-progress {
-    height: 8px;
-    background: #444;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid #555;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    z-index: 2;
-    position: relative;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #fff, #ccc);
-    width: 0%;
-    transition: width 0.05s linear;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Spring compression effect in progress bar */
-.progress-fill::after {
-    content: '';
+/* Pin chambers container */
+.pin-chambers {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2) 20%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0.2) 80%,
-        transparent
-    );
-    animation: springShine 1.5s infinite linear;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 0 20px;
 }
 
-@keyframes springShine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+/* Individual pin chamber */
+.pin-chamber {
+    width: 24px;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Vertical lockpicks container */
+/* Chamber tube */
+.chamber-tube {
+    width: 16px;
+    height: 100%;
+    background: linear-gradient(180deg, #2a2a2a 0%, #222 100%);
+    border: 1px solid #444;
+    border-radius: 0 0 8px 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+/* Shear line indicator */
+.shear-line {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #ffd700;
+    z-index: 5;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+.shear-line::before {
+    content: "SHEAR LINE";
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700;
+    font-size: 0.7rem;
+    font-family: 'Digital', sans-serif;
+    text-shadow: 0 0 5px #ffd700;
+}
+
+/* Driver pin (top pin) */
+.driver-pin {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(180deg, #666 0%, #555 100%);
+    border-radius: 0 0 8px 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: height 0.1s ease;
+    border-bottom: 2px solid #777;
+    box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Key pin (bottom pin) */
+.key-pin {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(180deg, #888 0%, #777 100%);
+    border-radius: 8px 8px 0 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: height 0.1s ease;
+    border-top: 2px solid #999;
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Spring for driver pin */
+.pin-spring {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(180deg, #444 0%, #333 100%);
+    position: absolute;
+    top: 40px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.spring-coil-vertical {
+    width: 12px;
+    height: 4px;
+    background: linear-gradient(90deg, #555, #666, #555);
+    border-radius: 2px;
+    margin: 1px 0;
+}
+
+/* Lockpick visualization */
+.lockpick-tool {
+    width: 200px;
+    height: 30px;
+    background: linear-gradient(90deg, #888 0%, #aaa 50%, #888 100%);
+    border-radius: 4px;
+    position: absolute;
+    bottom: -40px;
+    transform-origin: left center;
+    transition: transform 0.1s linear;
+    border: 1px solid #666;
+    box-shadow: 
+        0 3px 10px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    z-index: 10;
+}
+
+/* Tension wrench */
+.tension-wrench {
+    width: 60px;
+    height: 15px;
+    background: linear-gradient(90deg, #666 0%, #777 100%);
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(5deg);
+    border-radius: 2px;
+    border: 1px solid #555;
+    box-shadow: 
+        0 2px 5px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Pin labels */
+.pin-label {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-family: 'Digital', sans-serif;
+    font-size: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Unlocked state */
+.pin-chamber.unlocked .driver-pin {
+    background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+    box-shadow: 
+        0 0 15px rgba(76, 175, 80, 0.5),
+        inset 0 -1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.pin-chamber.unlocked .key-pin {
+    background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+    box-shadow: 
+        0 0 15px rgba(76, 175, 80, 0.5),
+        inset 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Current pin being picked */
+.pin-chamber.current .driver-pin {
+    animation: pinPulse 1.5s infinite alternate;
+}
+
+.pin-chamber.current .key-pin {
+    animation: pinPulse 1.5s infinite alternate;
+}
+
+@keyframes pinPulse {
+    from { 
+        box-shadow: 
+            0 0 5px rgba(255, 255, 255, 0.3),
+            inset 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    to { 
+        box-shadow: 
+            0 0 15px rgba(255, 255, 255, 0.7),
+            inset 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Lockpick position indicator */
+.lockpick-position-indicator {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    border: 1px solid #444;
+    overflow: hidden;
+}
+
+.position-slider {
+    width: 30px;
+    height: 100%;
+    background: linear-gradient(90deg, #fff, #ccc);
+    position: absolute;
+    left: 0;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transition: left 0.05s linear;
+}
+
+/* Target zone in position indicator */
+.target-zone {
+    position: absolute;
+    height: 100%;
+    background: rgba(76, 175, 80, 0.3);
+    border-left: 2px solid #4caf50;
+    border-right: 2px solid #4caf50;
+}
+
+/* Success flash effect */
+.success-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(76, 175, 80, 0.4) 0%, transparent 70%);
+    animation: flashEffect 0.5s ease-out;
+    pointer-events: none;
+    z-index: 20;
+}
+
+@keyframes flashEffect {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.2); }
+}
+
+/* Lock status indicator */
+.lock-status-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.pin-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-light {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff4444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+    transition: all 0.3s ease;
+}
+
+.status-light.unlocked {
+    background: #44ff44;
+    box-shadow: 0 0 15px rgba(68, 255, 68, 0.7);
+}
+
+.status-light.current {
+    animation: statusPulse 1s infinite alternate;
+}
+
+@keyframes statusPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+.status-label {
+    font-family: 'Digital', sans-serif;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+/* ============================================ */
+/* VERTICAL LOCKPICK TRACKS (Simplified) */
+/* ============================================ */
+
 .lockpicks-container {
     display: flex;
     justify-content: center;
     gap: 20px;
     width: 100%;
-    height: 250px;
+    height: 120px;
+    margin-top: 20px;
+    opacity: 0.7;
 }
 
 .lockpick-track {
     flex: 1;
     position: relative;
     height: 100%;
-    max-width: 180px;
+    max-width: 120px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Connector lines between barrels and lockpicks */
-.connector-line {
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 15px;
-    background: linear-gradient(to bottom, #555, #333);
-}
-
-/* Updated Lockpick Visual with Spring Effect */
 .lockpick-visual {
     width: 100%;
     height: 100%;
@@ -642,63 +698,6 @@ body {
         0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Track spring effect container */
-.track-spring {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-/* Vertical spring coils for track */
-.track-spring-coil {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 8px;
-    background: linear-gradient(90deg, transparent, #666, transparent);
-    border-radius: 4px;
-    animation: trackSpringPulse 2s infinite ease-in-out;
-}
-
-.track-spring-coil:nth-child(1) { top: 10%; animation-delay: 0s; }
-.track-spring-coil:nth-child(2) { top: 30%; animation-delay: 0.1s; }
-.track-spring-coil:nth-child(3) { top: 50%; animation-delay: 0.2s; }
-.track-spring-coil:nth-child(4) { top: 70%; animation-delay: 0.3s; }
-.track-spring-coil:nth-child(5) { top: 90%; animation-delay: 0.4s; }
-
-@keyframes trackSpringPulse {
-    0%, 100% { 
-        opacity: 0.3;
-        transform: scaleX(0.95);
-    }
-    50% { 
-        opacity: 0.7;
-        transform: scaleX(1);
-    }
-}
-
-/* Enhanced spring animation when current track is active */
-.lockpick-track.current .track-spring-coil {
-    animation: trackSpringActive 1s infinite ease-in-out;
-    background: linear-gradient(90deg, transparent, #fff, transparent);
-}
-
-@keyframes trackSpringActive {
-    0%, 100% { 
-        opacity: 0.5;
-        transform: scaleX(0.9);
-    }
-    50% { 
-        opacity: 1;
-        transform: scaleX(1.1);
-    }
-}
-
 .lockpick-line {
     position: absolute;
     top: 0;
@@ -710,37 +709,33 @@ body {
     z-index: 1;
 }
 
-.lockpick {
-    position: absolute;
-    top: 0%;
-    width: 100%;
-    height: 16px;
-    background: linear-gradient(to right, #ccc, #aaa);
-    left: 0;
-    transform: translateY(-50%);
-    border-radius: 0 0 4px 4px;
+/* ============================================ */
+/* GAME INFO SECTION */
+/* ============================================ */
+
+.game-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    position: relative;
     z-index: 3;
-    transition: top 0.05s linear;
-    box-shadow: 
-        0 0 10px rgba(200, 200, 200, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border: 1px solid #777;
 }
 
-.lockpick-target {
-    position: absolute;
-    height: 50px;
+.game-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
-    background: rgba(76, 175, 80, 0.15);
-    left: 0;
-    border-top: 2px solid #4caf50;
-    border-bottom: 2px solid #4caf50;
-    pointer-events: none;
-    z-index: 2;
-    transform: translateY(-50%);
 }
 
-/* Game info section */
+.barrels-lockpicks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
 .game-info {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -873,7 +868,7 @@ body {
     color: #777;
     font-size: 0.9rem;
     position: relative;
-    z-index: 3; /* Above texture */
+    z-index: 3;
 }
 
 .rust-stain {
@@ -958,24 +953,52 @@ body {
     color: #fff;
 }
 
-/* Responsive */
+/* ============================================ */
+/* ANIMATIONS FOR REALISTIC LOCK PICKING */
+/* ============================================ */
+
+@keyframes pickJiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(1deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-1deg); }
+}
+
+.picking-active .lockpick-tool {
+    animation: pickJiggle 0.3s infinite;
+}
+
+@keyframes tensionPulse {
+    0%, 100% { transform: translateY(-50%) rotate(5deg); }
+    50% { transform: translateY(-50%) rotate(7deg); }
+}
+
+.picking-active .tension-wrench {
+    animation: tensionPulse 0.5s infinite;
+}
+
+/* Pin bounce when correctly set */
+@keyframes pinBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.pin-chamber.unlocked .key-pin {
+    animation: pinBounce 0.5s ease 3;
+}
+
+/* ============================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================ */
+
 @media (max-width: 900px) {
     .game-info {
         grid-template-columns: 1fr;
     }
     
-    .lock-barrels {
-        flex-wrap: wrap;
-    }
-    
     .lockpicks-container {
         flex-wrap: wrap;
         height: 200px;
-    }
-    
-    .barrel, .lockpick-track {
-        min-width: 140px;
-        max-width: 160px;
     }
     
     .sticky-note {
@@ -1008,22 +1031,55 @@ body {
     }
 }
 
+@media (max-width: 768px) {
+    .lock-body {
+        width: 250px;
+        height: 150px;
+    }
+    
+    .lock-cylinder {
+        width: 180px;
+        height: 80px;
+    }
+    
+    .keyway {
+        width: 150px;
+    }
+    
+    .pin-chamber {
+        width: 20px;
+    }
+    
+    .chamber-tube {
+        width: 14px;
+    }
+    
+    .shear-line {
+        top: 30px;
+    }
+    
+    .lockpick-position-indicator {
+        width: 150px;
+    }
+    
+    .pin-label {
+        font-size: 0.8rem;
+    }
+    
+    .lockpick-tool {
+        width: 160px;
+        height: 25px;
+    }
+}
+
 @media (max-width: 600px) {
-    .lock-barrels, .lockpicks-container {
+    .lockpicks-container {
         gap: 10px;
     }
     
-    .barrel, .lockpick-track {
+    .lockpick-track {
         min-width: 100px;
         max-width: 120px;
-    }
-    
-    .barrel {
-        padding: 15px 10px;
-    }
-    
-    .barrel-number {
-        font-size: 1.5rem;
     }
     
     .status-card {
@@ -1044,10 +1100,6 @@ body {
         font-size: 1.6rem;
     }
     
-    .sticky-note-detail {
-        font-size: 0.85rem;
-    }
-    
     .splash-content h2 {
         font-size: 1.8rem;
     }
@@ -1057,12 +1109,62 @@ body {
     }
     
     .lockpicks-container {
-        height: 180px;
+        height: 150px;
     }
     
     .locker-frame {
         padding: 15px;
         border-width: 8px;
+    }
+    
+    .lock-body {
+        width: 200px;
+        height: 120px;
+    }
+    
+    .lock-cylinder {
+        width: 150px;
+        height: 60px;
+        border-radius: 30px;
+    }
+    
+    .keyway {
+        width: 120px;
+        height: 8px;
+    }
+    
+    .pin-chamber {
+        width: 16px;
+    }
+    
+    .chamber-tube {
+        width: 12px;
+    }
+    
+    .driver-pin {
+        height: 30px;
+    }
+    
+    .key-pin {
+        height: 40px;
+    }
+    
+    .shear-line {
+        top: 25px;
+    }
+    
+    .lockpick-tool {
+        width: 130px;
+        height: 20px;
+    }
+    
+    .lockpick-position-indicator {
+        width: 120px;
+        height: 25px;
+    }
+    
+    .position-slider {
+        width: 25px;
     }
     
     /* Adjust texture overlay height for smaller mobile */
