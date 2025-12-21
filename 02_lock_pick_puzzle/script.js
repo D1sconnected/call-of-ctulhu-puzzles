@@ -560,10 +560,10 @@ function updateLockpickVisualPosition() {
     
     if (!positionSlider || !lockpickTool) return;
     
-    // Calculate pixel position based on indicator width (180px)
-    const sliderWidth = 180;
+    // UPDATED: Calculate pixel position based on new indicator width (240px)
+    const sliderWidth = 240; // Changed from 180px
     const sliderPosition = (gameState.lockpickPosition / 100) * sliderWidth;
-    positionSlider.style.left = `${sliderPosition - 15}px`; // Center the slider (30px wide)
+    positionSlider.style.left = `${sliderPosition - 20}px`; // Center the slider (40px wide)
     
     // Update lockpick tool angle (simulating picking action)
     const angle = (gameState.lockpickPosition - 50) / 50 * 15; // ±15 degrees
@@ -582,8 +582,8 @@ function updateTargetZonePosition() {
     const pin = gameState.pins[gameState.currentPin - 1];
     if (!pin) return;
     
-    // Calculate pixel position based on indicator width (180px)
-    const sliderWidth = 180;
+    // UPDATED: Calculate pixel position based on new indicator width (240px)
+    const sliderWidth = 240; // Changed from 180px
     const targetPosition = (pin.targetPosition / 100) * sliderWidth;
     const targetZoneHalfWidth = gameState.targetZoneHalfWidth;
     
@@ -623,7 +623,7 @@ function fixLockpick() {
     playSound(soundLockpickFix, 0.4);
     
     // Get ACTUAL pixel positions for accurate detection
-    const sliderWidth = 180;
+    const sliderWidth = 240; // UPDATED: Changed from 180px to 240px
     const lockpickPixelPosition = (gameState.lockpickPosition / 100) * sliderWidth;
     const targetZonePixelPosition = (pin.targetPosition / 100) * sliderWidth;
     
@@ -631,7 +631,7 @@ function fixLockpick() {
     const targetZonePixelWidth = gameState.settings.targetZoneWidth;
     const targetZoneHalfPixelWidth = targetZonePixelWidth / 2;
     
-    // Calculate the center of the lockpick slider (15px from left edge since slider is 30px wide)
+    // Calculate the center of the lockpick slider (20px from left edge since slider is 40px wide)
     const lockpickCenter = lockpickPixelPosition;
     
     // Calculate target zone boundaries
