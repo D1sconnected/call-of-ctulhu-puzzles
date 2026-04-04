@@ -1,0 +1,1186 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Industrial', monospace;
+    background: #1a1a1a;
+    color: #c0c0c0;
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(4px, 1vh, 10px);
+    position: relative;
+    overflow: hidden;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Rust texture overlay */
+.rust-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 80% 70%, rgba(160, 82, 45, 0.05) 0%, transparent 20%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Texture overlay for main locker - EXCLUDES sticky note */
+.locker-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 120px);
+    background-image: url('texture.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    z-index: 1;
+    border-radius: 8px;
+    pointer-events: none;
+    margin-top: 120px;
+}
+
+/* Main locker container */
+.locker-container {
+    width: min(95%, 1200px);
+    max-width: 1200px;
+    position: relative;
+    z-index: 2;
+    max-height: calc(100vh - clamp(8px, 2vh, 20px));
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+/* Locker frame - using the 327 locker style */
+.locker-frame {
+    background: #333;
+    border: 6px solid #444;
+    border-radius: 6px;
+    padding: clamp(8px, 1.2vh, 12px);
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.8),
+        inset 0 0 15px rgba(0, 0, 0, 0.9);
+    position: relative;
+    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    width: 100%;
+}
+
+/* Locker header with number plate */
+.locker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #555;
+    position: relative;
+    z-index: 3;
+}
+
+.locker-number-plate {
+    background: #444;
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: 2px solid #666;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 120px;
+    position: relative;
+    z-index: 3;
+}
+
+.locker-number-plate .number {
+    font-family: 'Digital', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: bold;
+    display: block;
+}
+
+.locker-number-plate .label {
+    font-size: 0.6rem;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.vent-slits {
+    display: flex;
+    gap: 10px;
+}
+
+.slit {
+    width: 25px;
+    height: 6px;
+    background: #222;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Sticky Note Container - Positioned above texture */
+.sticky-note-container {
+    margin: clamp(8px, 1vh, 12px) 0;
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+    position: relative;
+    z-index: 4;
+}
+
+.sticky-note {
+    background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
+    width: 250px;
+    padding: 15px;
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-image: url('note_texture.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: #fff9c4;
+    background-blend-mode: multiply;
+    z-index: 5;
+}
+
+.sticky-note:hover {
+    transform: rotate(-1deg) scale(1.02);
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.5),
+        0 3px 12px rgba(0, 0, 0, 0.4),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sticky-note-pin {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 25px;
+    background: #e53935;
+    border-radius: 50%;
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.4),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.2),
+        inset 0 2px 3px rgba(255, 255, 255, 0.3);
+    z-index: 6;
+}
+
+.sticky-note-pin::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #b71c1c;
+    border-radius: 50%;
+}
+
+.sticky-note-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+}
+
+.sticky-note-title {
+    font-family: 'Digital', sans-serif;
+    font-size: 0.9rem;
+    color: #5d4037;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.sticky-note-name {
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+}
+
+.sticky-note-subtitle {
+    font-family: 'Handwriting', 'Comic Sans MS', cursive;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+    font-style: italic;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 10px;
+}
+
+/* Paper texture effect - layered over the background image */
+.sticky-note::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+        linear-gradient(#eee .1em, transparent .1em);
+    background-size: 100% 1.2em;
+    opacity: 0.15;
+    border-radius: 4px;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+/* ============================================ */
+/* REALISTIC LOCK MECHANISM STYLES */
+/* ============================================ */
+
+.real-lock-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 4px;
+}
+
+.lock-body {
+    width: min(100%, 600px) !important;
+    height: clamp(250px, 31vh, 332px) !important;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 38%),
+        linear-gradient(180deg, #61676d 0%, #353b41 42%, #1c2126 100%);
+    border-radius: 18px;
+    position: relative;
+    border: 1px solid rgba(163, 174, 186, 0.45);
+    box-shadow: 
+        inset 0 2px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -18px 26px rgba(0, 0, 0, 0.45),
+        0 20px 45px rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.lock-body::before,
+.lock-body::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    top: 20px;
+    background: radial-gradient(circle at 35% 35%, #d7dee5, #68717b 70%);
+    box-shadow: 0 0 0 2px rgba(37, 42, 47, 0.85);
+}
+
+.lock-body::before {
+    left: 20px;
+}
+
+.lock-body::after {
+    right: 20px;
+}
+
+/* Lock cylinder */
+.lock-cylinder {
+    width: min(84%, 450px) !important;
+    height: clamp(132px, 16.8vh, 172px) !important;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.16), transparent 35%),
+        linear-gradient(180deg, #8a9097 0%, #5b636b 45%, #353b41 100%);
+    border-radius: 110px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(182, 192, 203, 0.55);
+    box-shadow: 
+        inset 0 12px 18px rgba(255, 255, 255, 0.08),
+        inset 0 -16px 22px rgba(0, 0, 0, 0.35),
+        0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Keyway slot */
+.keyway {
+    width: min(74%, 320px) !important;
+    height: clamp(18px, 2.2vh, 22px) !important;
+    background: linear-gradient(90deg, #121518, #232931 45%, #121518);
+    border-radius: 0 0 12px 12px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 2px solid rgba(62, 71, 80, 0.9);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.7),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Pin chambers container */
+.pin-chambers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 0 28px;
+}
+
+/* Individual pin chamber */
+.pin-chamber {
+    width: 46px !important;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Chamber tube */
+.chamber-tube {
+    width: 30px !important;
+    height: 100%;
+    background: linear-gradient(180deg, #434b54 0%, #1d2329 100%);
+    border: 2px solid rgba(97, 108, 120, 0.85);
+    border-radius: 0 0 16px 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        inset 0 0 10px rgba(0, 0, 0, 0.7),
+        inset 0 10px 8px rgba(255, 255, 255, 0.04);
+}
+
+/* Driver pin (top pin) */
+.driver-pin {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(180deg, #c8d0d7 0%, #7f8a95 100%);
+    border-radius: 0 0 14px 14px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: height 0.18s ease;
+    border-bottom: 2px solid rgba(228, 235, 241, 0.35);
+    box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Key pin (bottom pin) */
+.key-pin {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(180deg, #dde3e8 0%, #8c969f 100%);
+    border-radius: 14px 14px 0 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: height 0.18s ease;
+    border-top: 2px solid rgba(243, 247, 250, 0.35);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Spring for driver pin */
+.pin-spring {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(180deg, #46505a 0%, #2b3138 100%);
+    position: absolute;
+    top: 40px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.spring-coil-vertical {
+    width: 12px;
+    height: 3px;
+    background: linear-gradient(90deg, #89939d, #d1d8de, #89939d);
+    border-radius: 2px;
+    margin: 1px 0;
+}
+
+/* Lockpick visualization */
+.lockpick-tool {
+    width: min(80%, 360px) !important;
+    height: clamp(20px, 2.6vh, 26px) !important;
+    background: linear-gradient(90deg, #7b858f 0%, #d5dde4 50%, #7b858f 100%);
+    border-radius: 4px;
+    position: absolute;
+    bottom: -40px;
+    transform-origin: left center;
+    transition: transform 0.1s linear;
+    border: 1px solid rgba(97, 108, 118, 0.95);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    z-index: 10;
+}
+
+/* Tension wrench */
+.tension-wrench {
+    width: 64px;
+    height: 14px;
+    background: linear-gradient(90deg, #6f7984 0%, #c0c9d2 100%);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%) rotate(5deg);
+    border-radius: 2px;
+    border: 1px solid #555;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Pin labels */
+.pin-label {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #f4e6c6;
+    font-family: 'Digital', sans-serif;
+    font-size: 1rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Unlocked state */
+.pin-chamber.unlocked .driver-pin {
+    background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+    box-shadow: 
+        0 0 12px rgba(76, 175, 80, 0.5),
+        inset 0 -1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.pin-chamber.unlocked .key-pin {
+    background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+    box-shadow: 
+        0 0 12px rgba(76, 175, 80, 0.5),
+        inset 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Current pin being picked */
+.pin-chamber.current .driver-pin {
+    animation: pinPulse 1.5s infinite alternate;
+}
+
+.pin-chamber.current .key-pin {
+    animation: pinPulse 1.5s infinite alternate;
+}
+
+@keyframes pinPulse {
+    from { 
+        box-shadow: 
+            0 0 5px rgba(255, 255, 255, 0.3),
+            inset 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    to { 
+        box-shadow: 
+            0 0 12px rgba(255, 255, 255, 0.7),
+            inset 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Lockpick position indicator */
+.lockpick-position-indicator {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(70%, 320px) !important;
+    height: clamp(22px, 2.8vh, 28px) !important;
+    background: rgba(21, 25, 29, 0.82);
+    border-radius: 999px;
+    border: 1px solid rgba(116, 127, 139, 0.72);
+    overflow: hidden;
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.65),
+        0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.position-slider {
+    width: 40px !important;
+    height: 100%;
+    background: linear-gradient(90deg, #eef2f5, #b7c1cb);
+    position: absolute;
+    left: 0;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    box-shadow: 0 0 10px rgba(223, 232, 239, 0.45);
+    transition: left 0.05s linear;
+}
+
+/* Target zone in position indicator */
+.target-zone {
+    position: absolute;
+    height: 100%;
+    background: rgba(151, 195, 120, 0.28);
+    border-left: 2px solid #9ecf78;
+    border-right: 2px solid #9ecf78;
+}
+
+/* Success flash effect */
+.success-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(76, 175, 80, 0.4) 0%, transparent 70%);
+    animation: flashEffect 0.5s ease-out;
+    pointer-events: none;
+    z-index: 20;
+}
+
+@keyframes flashEffect {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.2); }
+}
+
+/* Lock status indicator */
+.lock-status-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.pin-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-light {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ff4444;
+    box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
+    transition: all 0.3s ease;
+}
+
+.status-light.unlocked {
+    background: #44ff44;
+    box-shadow: 0 0 12px rgba(68, 255, 68, 0.7);
+}
+
+.status-light.current {
+    animation: statusPulse 1s infinite alternate;
+}
+
+@keyframes statusPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+.status-label {
+    font-family: 'Digital', sans-serif;
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+/* ============================================ */
+/* VERTICAL LOCKPICK TRACKS (Simplified) */
+/* ============================================ */
+
+.lockpicks-container {
+    display: none;
+}
+
+.lockpick-track {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    max-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lockpick-visual {
+    width: 100%;
+    height: 100%;
+    background: #2a2a2a;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #555;
+    margin-top: 3px;
+    box-shadow: 
+        inset 0 1px 3px rgba(0, 0, 0, 0.8),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.lockpick-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #444, #333, #444);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* ============================================ */
+/* DOOR IMAGE SECTION */
+/* ============================================ */
+
+.door-image-section {
+    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    border-radius: 5px;
+    padding: 15px;
+    border: 1px solid #555;
+    text-align: center;
+    position: relative;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-top: 15px;
+}
+
+.door-image-section h3 {
+    font-family: 'Digital', sans-serif;
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.door-image-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    border-radius: 3px;
+    border: 2px solid #444;
+    background: #222;
+    box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.8),
+        0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.door-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.door-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        rgba(0, 0, 0, 0.2) 0%, 
+        transparent 30%, 
+        transparent 70%, 
+        rgba(0, 0, 0, 0.3) 100%);
+    pointer-events: none;
+}
+
+/* ============================================ */
+/* GAME INFO SECTION */
+/* ============================================ */
+
+.game-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    position: relative;
+    z-index: 3;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.game-info {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px;
+    margin-top: 4px;
+    align-items: stretch;
+}
+
+.game-status {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.status-card {
+    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    border-radius: 5px;
+    padding: 15px 12px;
+    border: 1px solid #555;
+    text-align: center;
+    position: relative;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.status-card h3 {
+    font-family: 'Digital', sans-serif;
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.status-value {
+    font-family: 'Digital', sans-serif;
+    font-size: 2rem;
+    color: #fff;
+    font-weight: bold;
+    min-height: 2.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Controls section */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+}
+
+.instructions {
+    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    border-radius: 5px;
+    padding: 15px;
+    border: 1px solid #555;
+    position: relative;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.instructions h3 {
+    font-family: 'Digital', sans-serif;
+    color: #fff;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.instruction {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #444;
+}
+
+.instruction:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.metal-key {
+    font-family: 'Digital', sans-serif;
+    background: linear-gradient(135deg, #555 0%, #444 100%);
+    color: #fff;
+    padding: 6px 15px;
+    border-radius: 4px;
+    min-width: 80px;
+    text-align: center;
+    border: 1px solid #666;
+    margin-right: 15px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.desc {
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+/* Splash screens */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(20, 20, 20, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.splash-screen.active {
+    display: flex;
+    animation: fadeIn 0.5s ease;
+}
+
+.splash-content {
+    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    border-radius: 6px;
+    padding: 25px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    border: 8px solid #444;
+    box-shadow: 
+        0 0 30px rgba(255, 255, 255, 0.1),
+        inset 0 0 15px rgba(0, 0, 0, 0.9);
+}
+
+.splash-content h2 {
+    font-family: 'Digital', sans-serif;
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.splash-content p {
+    font-size: 1rem;
+    color: #ccc;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.metal-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #555 0%, #444 100%);
+    border: 2px solid #666;
+    border-radius: 5px;
+    color: #fff;
+    font-family: 'Digital', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.metal-btn:hover {
+    background: linear-gradient(135deg, #666 0%, #555 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 15px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* ============================================ */
+/* ANIMATIONS FOR REALISTIC LOCK PICKING */
+/* ============================================ */
+
+@keyframes pickJiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(0.7deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-0.7deg); }
+}
+
+.picking-active .lockpick-tool {
+    animation: pickJiggle 0.3s infinite;
+}
+
+@keyframes tensionPulse {
+    0%, 100% { transform: translateY(-50%) rotate(5deg); }
+    50% { transform: translateY(-50%) rotate(7deg); }
+}
+
+.picking-active .tension-wrench {
+    animation: tensionPulse 0.5s infinite;
+}
+
+/* Pin bounce when correctly set */
+@keyframes pinBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.pin-chamber.unlocked .key-pin {
+    animation: pinBounce 0.5s ease 3;
+}
+
+@keyframes lockFailureShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(4px); }
+}
+
+.lock-body.failure-feedback {
+    animation: lockFailureShake 0.35s ease;
+}
+
+/* ============================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================ */
+
+@media (max-width: 1000px) {
+    .lock-body {
+        height: 320px !important;
+    }
+    
+    .lock-cylinder {
+        height: 170px !important;
+    }
+    
+    .keyway {
+        height: 22px !important;
+    }
+    
+    .pin-chamber {
+        width: 40px !important;
+    }
+    
+    .chamber-tube {
+        width: 26px !important;
+    }
+    
+    .lockpick-tool {
+        height: 24px !important;
+    }
+    
+    .lockpick-position-indicator {
+        height: 26px !important;
+    }
+    
+    .position-slider {
+        width: 40px !important;
+    }
+    
+    .door-image-container {
+        height: 130px;
+    }
+}
+
+@media (max-width: 900px) {
+    .game-info {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .lock-body {
+        height: 280px !important;
+    }
+    
+    .lock-cylinder {
+        height: 150px !important;
+    }
+    
+    .keyway {
+        height: 18px !important;
+    }
+    
+    .pin-chamber {
+        width: 34px !important;
+    }
+    
+    .chamber-tube {
+        width: 22px !important;
+    }
+    
+    .lockpick-tool {
+        height: 21px !important;
+        bottom: -38px;
+    }
+    
+    .lockpick-position-indicator {
+        height: 24px !important;
+    }
+    
+    .sticky-note {
+        width: 220px;
+        padding: 12px;
+    }
+    
+    .sticky-note-name {
+        font-size: 1.5rem;
+    }
+    
+    .splash-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .locker-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .vent-slits {
+        align-self: flex-end;
+    }
+    
+    /* Adjust texture overlay height for mobile */
+    .locker-frame::before {
+        height: calc(100% - 110px);
+        margin-top: 110px;
+    }
+    
+    .door-image-container {
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .lock-body {
+        height: 250px !important;
+    }
+    
+    .lock-cylinder {
+        height: 132px !important;
+    }
+    
+    .keyway {
+        height: 16px !important;
+    }
+    
+    .pin-chamber {
+        width: 28px !important;
+    }
+    
+    .chamber-tube {
+        width: 18px !important;
+    }
+    
+    .lockpick-tool {
+        height: 19px !important;
+        bottom: -34px;
+    }
+    
+    .lockpick-position-indicator {
+        height: 22px !important;
+    }
+    
+    .door-image-container {
+        height: 110px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 5px;
+    }
+    
+    .locker-container {
+        width: 100%;
+        max-height: 100vh;
+    }
+    
+    .lock-body {
+        height: 220px !important;
+        border-radius: 14px;
+    }
+    
+    .lock-cylinder {
+        height: 116px !important;
+    }
+    
+    .keyway {
+        height: 14px !important;
+    }
+    
+    .pin-chamber {
+        width: 24px !important;
+    }
+    
+    .chamber-tube {
+        width: 16px !important;
+    }
+    
+    .lockpick-tool {
+        height: 16px !important;
+        bottom: -30px;
+    }
+    
+    .lockpick-position-indicator {
+        height: 18px !important;
+    }
+    
+    .sticky-note {
+        width: 200px;
+        padding: 10px;
+        transform: rotate(-1deg);
+    }
+    
+    .sticky-note-name {
+        font-size: 1.3rem;
+    }
+    
+    .splash-content {
+        padding: 20px;
+    }
+    
+    .splash-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .splash-content p {
+        font-size: 0.9rem;
+    }
+    
+    .door-image-container {
+        height: 100px;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

@@ -1,4 +1,47 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const TRANSLATIONS = {
+        en: {
+            stepsLabel: './moves',
+            timerLabel: './time',
+            controlsTitle: 'CONTROLS:',
+            controlsText: 'SELECT PIECE → SELECT ADJACENT → SWAP',
+            languageToggleText: 'SWITCH LANGUAGE',
+            systemOperationTitle: 'SYSTEM OPERATION',
+            instruction1: '1. INITIATE PIECE SELECTION BY DIRECT INTERFACE CONTACT',
+            instruction2: '2. ACTIVATE ADJACENT NODE FOR DATA TRANSFER',
+            instruction3: '3. EACH TRANSACTION LOGGED IN MVS REGISTER',
+            instruction4: '4. RECONSTRUCT ORIGINAL MATRIX TO GAIN ACCESS',
+            instruction5: '5. AUDIO PROTOCOL: ACTIVE',
+            winTitle: 'MATRIX RECONSTRUCTED',
+            finalMovesLabel: 'MOVES:',
+            finalTimeLabel: 'TIME:',
+            finalStatusLabel: 'STATUS:',
+            finalStatusText: 'SUCCESS',
+            playAgainBtn: 'CONTINUE',
+            selectedNode: (position) => `NODE ${position + 1} SELECTED → CHOOSE ADJACENT █`
+        },
+        ru: {
+            stepsLabel: './ходы',
+            timerLabel: './время',
+            controlsTitle: 'УПРАВЛЕНИЕ:',
+            controlsText: 'ВЫБЕРИ ФРАГМЕНТ → ВЫБЕРИ СОСЕДНИЙ → ОБМЕН',
+            languageToggleText: 'СМЕНИТЬ ЯЗЫК',
+            systemOperationTitle: 'СИСТЕМНАЯ ОПЕРАЦИЯ',
+            instruction1: '1. ИНИЦИИРУЙТЕ ВЫБОР ФРАГМЕНТА ПРЯМЫМ КОНТАКТОМ С ИНТЕРФЕЙСОМ',
+            instruction2: '2. АКТИВИРУЙТЕ СОСЕДНИЙ УЗЕЛ ДЛЯ ПЕРЕДАЧИ ДАННЫХ',
+            instruction3: '3. КАЖДАЯ ТРАНЗАКЦИЯ РЕГИСТРИРУЕТСЯ В РЕГИСТРЕ MVS',
+            instruction4: '4. ВОССТАНОВИТЕ ИСХОДНУЮ МАТРИЦУ ДЛЯ ПОЛУЧЕНИЯ ДОСТУПА',
+            instruction5: '5. АУДИО ПРОТОКОЛ: АКТИВЕН',
+            winTitle: 'МАТРИЦА ВОССТАНОВЛЕНА',
+            finalMovesLabel: 'ХОДЫ:',
+            finalTimeLabel: 'ВРЕМЯ:',
+            finalStatusLabel: 'СТАТУС:',
+            finalStatusText: 'УСПЕХ',
+            playAgainBtn: 'ПРОДОЛЖИТЬ',
+            selectedNode: (position) => `УЗЕЛ ${position + 1} ВЫБРАН → ВЫБЕРИТЕ СОСЕДНИЙ █`
+        }
+    };
+
     // Game state
     let steps = 0;
     let gameActive = true;
@@ -8,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let elapsedTime = 0;
     let timerInterval = null;
     let lastSecond = 0;
+    let currentLanguage = 'en';
     
     // Single image - using local image from root directory
     const puzzleImage = 'mansion.jpg';
@@ -28,6 +72,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const finalTimeElement = document.getElementById('final-time');
     const playAgainBtn = document.getElementById('play-again-btn');
     const selectedPieceInfo = document.getElementById('selected-piece-info');
+
+    function getText() {
+        return TRANSLATIONS[currentLanguage];
+    }
+
+    function getSelectedPieceMessage(position) {
+        return getText().selectedNode(position);
+    }
+
+    function applyTranslations() {
+        const t = getText();
+        document.documentElement.lang = currentLanguage;
+
+        const mappings = {
+            'steps-label': t.stepsLabel,
+            'timer-label': t.timerLabel,
+            'controls-title': t.controlsTitle,
+            'controls-text': t.controlsText,
+            'language-toggle-text': t.languageToggleText,
+            'system-operation-title': t.systemOperationTitle,
+            'instruction-1': t.instruction1,
+            'instruction-2': t.instruction2,
+            'instruction-3': t.instruction3,
+            'instruction-4': t.instruction4,
+            'instruction-5': t.instruction5,
+            'win-title': t.winTitle,
+            'final-moves-label': t.finalMovesLabel,
+            'final-time-label': t.finalTimeLabel,
+            'final-status-label': t.finalStatusLabel,
+            'final-status-text': t.finalStatusText,
+            'play-again-btn': t.playAgainBtn
+        };
+
+        Object.entries(mappings).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+    }
+
+    function toggleLanguage() {
+        currentLanguage = currentLanguage === 'en' ? 'ru' : 'en';
+        applyTranslations();
+
+        if (selectedPieceIndex !== null) {
+            selectedPieceInfo.textContent = getSelectedPieceMessage(selectedPieceIndex);
+        }
+    }
     
     // Audio elements
     const buttonClickSound = document.getElementById('button-click-sound');
@@ -105,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         piecePositions = [];
         selectedPieceIndex = null;
         selectedPieceInfo.textContent = '█';
+        applyTranslations();
         
         // Initialize with pieces in correct order
         for (let i = 0; i < boardSize * boardSize; i++) {
@@ -201,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // If no piece is selected, select this position
         if (selectedPieceIndex === null) {
             selectedPieceIndex = position;
-            selectedPieceInfo.textContent = `NODE ${position + 1} SELECTED → CHOOSE ADJACENT █`;
+            selectedPieceInfo.textContent = getSelectedPieceMessage(position);
         }
         // If same position is clicked again, deselect it
         else if (selectedPieceIndex === position) {
@@ -249,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Pieces are not adjacent, select the new piece instead
                 selectedPieceIndex = position;
-                selectedPieceInfo.textContent = `NODE ${position + 1} SELECTED → CHOOSE ADJACENT █`;
+                selectedPieceInfo.textContent = getSelectedPieceMessage(position);
                 updatePieceSelection();
             }
         }
@@ -302,6 +396,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listener for play again button
     playAgainBtn.addEventListener('click', playAgain);
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'l' || e.key === 'L') {
+            e.preventDefault();
+            toggleLanguage();
+        }
+    });
     
     // Initialize the game
     initPuzzle();
