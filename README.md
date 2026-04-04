@@ -7,11 +7,17 @@ A collection of HTML-based interactive puzzles for Call of Cthulhu sessions. Eac
 ### [01_slide_puzzle](./01_slide_puzzle/)
 A retro terminal-style sliding puzzle with sound effects, move counter, timer, and bilingual interface support.
 
+![01 slide puzzle preview](./01_slide_puzzle/01_slide_puzzle_preview.jpg)
+
 ### [02_lock_pick_puzzle](./02_lock_pick_puzzle/)
 A lockpicking mini-game inspired by TES IV: Oblivion, adapted for a creepy investigative atmosphere with audio feedback and multi-pin progression.
 
+![02 lock pick puzzle preview](./02_lock_pick_puzzle/02_lock_puzzle_preview.jpg)
+
 ### [03_guess_puzzle](./03_guess_puzzle/)
 A code-sequence deduction puzzle where players assemble guesses from symbolic inputs, review attempt history, and decode the correct pattern before system lockdown.
+
+![03 guess puzzle preview](./03_guess_puzzle/03_guess_puzzle_preview.jpg)
 
 ## 🌐 Language Support
 

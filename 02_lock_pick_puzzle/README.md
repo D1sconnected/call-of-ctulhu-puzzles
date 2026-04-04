@@ -1,6 +1,8 @@
-# 02_lock_pick_puzzle
+# 🔐 02_lock_pick_puzzle
 
 An HTML lockpicking puzzle inspired by the feel of TES IV: Oblivion, reworked for a Call of Cthulhu session as a tense, tactile interface challenge.
+
+![02 lock pick puzzle preview](./02_lock_puzzle_preview.jpg)
 
 ## Overview
 

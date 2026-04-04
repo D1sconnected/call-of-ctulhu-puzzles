@@ -1,6 +1,8 @@
-# 03_guess_puzzle
+# 🧠 03_guess_puzzle
 
 An HTML deduction puzzle where players assemble a symbolic code sequence, submit guesses, read feedback, and iteratively decode the correct combination.
+
+![03 guess puzzle preview](./03_guess_puzzle_preview.jpg)
 
 ## Overview
 
