@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Взлом замка</title>
+    <title>Lock Picking</title>
     <style>
         /* Embedded fonts */
         @font-face {
@@ -31,17 +31,17 @@
     <!-- Splash Screens -->
     <div id="winScreen" class="splash-screen">
         <div class="splash-content locker-frame">
-            <h2>✓ ЗАМОК ВСКРЫТ</h2>
-            <p>Все пины выставлены по линии среза. Механизм щёлкает, и дверь открывается.</p>
-            <button class="metal-btn" onclick="location.reload()">⟳ ПОПРОБОВАТЬ ЕЩЁ РАЗ</button>
+            <h2 id="winTitle">✓ LOCK OPENED</h2>
+            <p id="winText">All pins aligned at the shear line. The mechanism clicks and the door swings open.</p>
+            <button id="winButton" class="metal-btn" onclick="location.reload()">⟳ TRY AGAIN</button>
         </div>
     </div>
     
     <div id="loseScreen" class="splash-screen">
         <div class="splash-content locker-frame">
-            <h2>✗ ЗАМОК ЗАКЛИНИЛО</h2>
-            <p>Механизм заклинило. Нужна новая отмычка или ещё одна попытка.</p>
-            <button class="metal-btn" onclick="location.reload()">⚒ НАЧАТЬ СНАЧАЛА</button>
+            <h2 id="loseTitle">✗ LOCK JAMMED</h2>
+            <p id="loseText">The mechanism jammed. You'll need a fresh pick or another attempt.</p>
+            <button id="loseButton" class="metal-btn" onclick="location.reload()">⚒ RESTART</button>
         </div>
     </div>
     
@@ -52,7 +52,7 @@
             <!-- Locker header with number -->
             <div class="locker-header">
                 <div class="locker-number-plate">
-                    <span class="number">ШК-14</span>
+                    <span id="lockerNumber" class="number">LK-14</span>
                 </div>
                 <div class="vent-slits">
                     <div class="slit"></div>
@@ -66,9 +66,9 @@
                 <div class="sticky-note">
                     <div class="sticky-note-pin"></div>
                     <div class="sticky-note-content">
-                        <div class="sticky-note-title">ВЛАДЕЛЕЦ:</div>
-                        <div class="sticky-note-name">ПРОХОРОВ И.С.</div>
-                        <div class="sticky-note-subtitle">⚡ЭЛЕКТРИК</div>
+                        <div id="ownerLabel" class="sticky-note-title">OWNER:</div>
+                        <div id="ownerName" class="sticky-note-name">PROKHOROV I.S.</div>
+                        <div id="ownerRole" class="sticky-note-subtitle">⚡ELECTRICIAN</div>
                     </div>
                     <div class="sticky-note-corners">
                         <div class="corner top-left"></div>
@@ -99,12 +99,12 @@
                         <div class="game-status">
                             <div class="status-card metal-panel">
                                 <div class="metal-bolt small"></div>
-                                <h3>⚙ ТЕКУЩАЯ ЯЧЕЙКА</h3>
+                                <h3 id="currentPinLabel">⚙ CURRENT PIN</h3>
                                 <div class="status-value" id="currentBarrel">1</div>
                             </div>
                             <div class="status-card metal-panel">
                                 <div class="metal-bolt small"></div>
-                                <h3>🔧 ОТМЫЧКИ</h3>
+                                <h3 id="lockpicksLabel">🔧 LOCKPICKS</h3>
                                 <div class="status-value" id="lockpicksCount">3</div>
                             </div>
                         </div>
@@ -112,14 +112,18 @@
                         <div class="controls">
                             <div class="instructions metal-panel">
                                 <div class="metal-bolt small"></div>
-                                <h3>⌨ ПАМЯТКА </h3>
+                                <h3 id="instructionsTitle">⌨ CONTROLS</h3>
                                 <div class="instruction">
                                     <span class="key metal-key">↑ W</span>
-                                    <span class="desc">НАЧАТЬ ДВИЖЕНИЕ</span>
+                                    <span id="startMoveLabel" class="desc">START MOVEMENT</span>
                                 </div>
                                 <div class="instruction">
                                     <span class="key metal-key">↵ ENTER</span>
-                                    <span class="desc">ЗАФИКСИРОВАТЬ</span>
+                                    <span id="fixPickLabel" class="desc">LOCK IN PLACE</span>
+                                </div>
+                                <div class="instruction">
+                                    <span class="key metal-key">L</span>
+                                    <span id="toggleLangLabel" class="desc">SWITCH LANGUAGE</span>
                                 </div>
                             </div>
                         </div>
@@ -129,7 +133,7 @@
                     <!-- <div class="door-image-section metal-panel full-width">
                         <div class="metal-bolt small"></div>
                         <div class="door-image-container">
-                            <img src="door.jpg" alt="Дверца шкафчика" class="door-image">
+                            <img src="door.jpg" alt="Locker door" class="door-image">
                             <div class="door-image-overlay"></div>
                         </div>
                     </div> -->

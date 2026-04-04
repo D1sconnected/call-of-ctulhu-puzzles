@@ -22,10 +22,58 @@ const GAME_CONFIG = {
     targetPositionMax: 70   // Maximum percentage
 };
 
+const TRANSLATIONS = {
+    en: {
+        pageTitle: 'Lock Picking',
+        lockerNumber: 'LK-14',
+        winTitle: '✓ LOCK OPENED',
+        winText: 'All pins aligned at the shear line. The mechanism clicks and the door swings open.',
+        winButton: '⟳ TRY AGAIN',
+        loseTitle: '✗ LOCK JAMMED',
+        loseText: "The mechanism jammed. You'll need a fresh pick or another attempt.",
+        loseButton: '⚒ RESTART',
+        ownerLabel: 'OWNER:',
+        ownerName: 'PROKHOROV I.S.',
+        ownerRole: '⚡ELECTRICIAN',
+        currentPinLabel: '⚙ CURRENT PIN',
+        lockpicksLabel: '🔧 LOCKPICKS',
+        instructionsTitle: '⌨ CONTROLS',
+        startMoveLabel: 'START MOVEMENT',
+        fixPickLabel: 'LOCK IN PLACE',
+        toggleLangLabel: 'SWITCH LANGUAGE',
+        pinStatus: 'PIN',
+        initError: 'Failed to initialize the game. Check the console for details.',
+        doorAlt: 'Locker door'
+    },
+    ru: {
+        pageTitle: 'Взлом замка',
+        lockerNumber: 'ШК-14',
+        winTitle: '✓ ЗАМОК ВСКРЫТ',
+        winText: 'Все пины выставлены по линии среза. Механизм щёлкает, и дверь открывается.',
+        winButton: '⟳ ПОПРОБОВАТЬ ЕЩЁ РАЗ',
+        loseTitle: '✗ ЗАМОК ЗАКЛИНИЛО',
+        loseText: 'Механизм заклинило. Нужна новая отмычка или ещё одна попытка.',
+        loseButton: '⚒ НАЧАТЬ СНАЧАЛА',
+        ownerLabel: 'ВЛАДЕЛЕЦ:',
+        ownerName: 'ПРОХОРОВ И.С.',
+        ownerRole: '⚡ЭЛЕКТРИК',
+        currentPinLabel: '⚙ ТЕКУЩИЙ ПИН',
+        lockpicksLabel: '🔧 ОТМЫЧКИ',
+        instructionsTitle: '⌨ ПАМЯТКА',
+        startMoveLabel: 'НАЧАТЬ ДВИЖЕНИЕ',
+        fixPickLabel: 'ЗАФИКСИРОВАТЬ',
+        toggleLangLabel: 'СМЕНИТЬ ЯЗЫК',
+        pinStatus: 'ПИН',
+        initError: 'Не удалось инициализировать игру. Подробности в консоли.',
+        doorAlt: 'Дверца шкафчика'
+    }
+};
+
 // ============================================
 // GAME STATE
 // ============================================
 let gameState = null;
+let currentLanguage = 'en';
 
 // DOM elements
 let lockBarrels, currentBarrelEl, lockpicksCount, lockpicksContainer;
@@ -57,6 +105,7 @@ function initGame() {
         console.log('Event listeners set up');
         
         // Update UI with initial values
+        applyTranslations();
         currentBarrelEl.textContent = gameState.currentPin;
         lockpicksCount.textContent = gameState.lockpicks;
         
@@ -67,8 +116,59 @@ function initGame() {
         
     } catch (error) {
         console.error('Error initializing game:', error);
-        alert('Не удалось инициализировать игру. Подробности в консоли.');
+        alert(TRANSLATIONS[currentLanguage].initError);
     }
+}
+
+function applyTranslations() {
+    const t = TRANSLATIONS[currentLanguage];
+    document.documentElement.lang = currentLanguage;
+    document.title = t.pageTitle;
+    
+    const textMappings = {
+        winTitle: t.winTitle,
+        winText: t.winText,
+        winButton: t.winButton,
+        loseTitle: t.loseTitle,
+        loseText: t.loseText,
+        loseButton: t.loseButton,
+        lockerNumber: t.lockerNumber,
+        ownerLabel: t.ownerLabel,
+        ownerName: t.ownerName,
+        ownerRole: t.ownerRole,
+        currentPinLabel: t.currentPinLabel,
+        lockpicksLabel: t.lockpicksLabel,
+        instructionsTitle: t.instructionsTitle,
+        startMoveLabel: t.startMoveLabel,
+        fixPickLabel: t.fixPickLabel,
+        toggleLangLabel: t.toggleLangLabel
+    };
+    
+    Object.entries(textMappings).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+    
+    const doorImage = document.querySelector('.door-image');
+    if (doorImage) {
+        doorImage.alt = t.doorAlt;
+    }
+    
+    updatePinStatusLabels();
+}
+
+function updatePinStatusLabels() {
+    const t = TRANSLATIONS[currentLanguage];
+    document.querySelectorAll('.status-label').forEach((label, index) => {
+        label.textContent = `${t.pinStatus} ${index + 1}`;
+    });
+}
+
+function toggleLanguage() {
+    currentLanguage = currentLanguage === 'en' ? 'ru' : 'en';
+    applyTranslations();
 }
 
 // Initialize DOM elements
@@ -330,7 +430,7 @@ function createRealisticLock() {
         
         const statusLabel = document.createElement('div');
         statusLabel.className = 'status-label';
-        statusLabel.textContent = `ПИН ${i}`;
+        statusLabel.textContent = `${TRANSLATIONS[currentLanguage].pinStatus} ${i}`;
         
         pinStatus.appendChild(statusLight);
         pinStatus.appendChild(statusLabel);
@@ -399,9 +499,14 @@ function handleKeyPress(e) {
                 'Lockpick moving:', gameState?.isLockpickMoving);
     
     // Prevent default behavior for game keys to avoid scrolling or other actions
-    if (e.key === 'w' || e.key === 'W' || e.key === 'Enter') {
+    if (e.key === 'w' || e.key === 'W' || e.key === 'Enter' || e.key === 'l' || e.key === 'L') {
         e.preventDefault();
         e.stopPropagation();
+    }
+
+    if (e.key === 'l' || e.key === 'L') {
+        toggleLanguage();
+        return;
     }
     
     if (!gameState || !gameState.isGameActive) {
