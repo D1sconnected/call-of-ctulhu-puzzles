@@ -2,7 +2,7 @@
 
 A collection of HTML-based interactive puzzles for Call of Cthulhu sessions. Each puzzle is self-contained, browser-friendly, and designed to feel like an in-world prop or mini-game rather than a generic web toy.
 
-## Current Puzzles
+## 🧩 Current Puzzles
 
 ### [01_slide_puzzle](./01_slide_puzzle/)
 A retro terminal-style sliding puzzle with sound effects, move counter, timer, and bilingual interface support.
@@ -13,7 +13,7 @@ A lockpicking mini-game inspired by TES IV: Oblivion, adapted for a creepy inves
 ### [03_guess_puzzle](./03_guess_puzzle/)
 A code-sequence deduction puzzle where players assemble guesses from symbolic inputs, review attempt history, and decode the correct pattern before system lockdown.
 
-## Language Support
+## 🌐 Language Support
 
 All current puzzles now use English as the default interface language.
 
@@ -21,7 +21,7 @@ Press `L` during a puzzle to switch between:
 - English
 - Russian
 
-## Quick Start
+## 🚀 Quick Start
 
 1. Clone the repository:
 
@@ -37,7 +37,7 @@ cd call-of-ctulhu-puzzles/02_lock_pick_puzzle
 
 3. Open `index.html` in a browser.
 
-## Repository Structure
+## 🗂 Repository Structure
 
 ```text
 01_slide_puzzle/
@@ -47,7 +47,7 @@ cd call-of-ctulhu-puzzles/02_lock_pick_puzzle
 
 Each folder contains its own HTML, CSS, JavaScript, sounds, and image assets.
 
-## Contributing
+## 🤝 Contributing
 
 Want to add a new puzzle or improve an existing one?
 
