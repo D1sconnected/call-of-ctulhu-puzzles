@@ -9,11 +9,12 @@ body {
     font-family: 'Industrial', monospace;
     background: #1a1a1a;
     color: #c0c0c0;
+    min-height: 100vh;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: clamp(4px, 1vh, 10px);
     position: relative;
     overflow: hidden;
     background-image: url('background.jpg');
@@ -57,12 +58,13 @@ body {
 
 /* Main locker container */
 .locker-container {
-    width: 95%;
+    width: min(95%, 1200px);
     max-width: 1200px;
     position: relative;
     z-index: 2;
-    max-height: 95vh;
+    max-height: calc(100vh - clamp(8px, 2vh, 20px));
     overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 /* Locker frame - using the 327 locker style */
@@ -70,12 +72,13 @@ body {
     background: #333;
     border: 6px solid #444;
     border-radius: 6px;
-    padding: 12px;
+    padding: clamp(8px, 1.2vh, 12px);
     box-shadow: 
         0 8px 25px rgba(0, 0, 0, 0.8),
         inset 0 0 15px rgba(0, 0, 0, 0.9);
     position: relative;
     background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+    width: 100%;
 }
 
 /* Locker header with number plate */
@@ -134,7 +137,7 @@ body {
 
 /* Sticky Note Container - Positioned above texture */
 .sticky-note-container {
-    margin: 15px 0;
+    margin: clamp(8px, 1vh, 12px) 0;
     display: flex;
     justify-content: center;
     perspective: 1000px;
@@ -262,53 +265,81 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    margin: 8px 0;
+    gap: 12px;
+    margin: 10px 0 4px;
 }
 
-/* Lock body styling - SCALED DOWN */
 .lock-body {
-    width: 400px !important;
-    height: 240px !important;
-    background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
-    border-radius: 6px;
+    width: min(100%, 600px) !important;
+    height: clamp(250px, 31vh, 332px) !important;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 38%),
+        linear-gradient(180deg, #61676d 0%, #353b41 42%, #1c2126 100%);
+    border-radius: 18px;
     position: relative;
-    border: 1px solid #444;
+    border: 1px solid rgba(163, 174, 186, 0.45);
     box-shadow: 
-        inset 0 0 10px rgba(0, 0, 0, 0.7),
-        0 4px 15px rgba(0, 0, 0, 0.4);
+        inset 0 2px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -18px 26px rgba(0, 0, 0, 0.45),
+        0 20px 45px rgba(0, 0, 0, 0.45);
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+}
+
+.lock-body::before,
+.lock-body::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    top: 20px;
+    background: radial-gradient(circle at 35% 35%, #d7dee5, #68717b 70%);
+    box-shadow: 0 0 0 2px rgba(37, 42, 47, 0.85);
+}
+
+.lock-body::before {
+    left: 20px;
+}
+
+.lock-body::after {
+    right: 20px;
 }
 
 /* Lock cylinder */
 .lock-cylinder {
-    width: 300px !important;
-    height: 140px !important;
-    background: linear-gradient(135deg, #555 0%, #444 100%);
-    border-radius: 70px;
+    width: min(84%, 450px) !important;
+    height: clamp(132px, 16.8vh, 172px) !important;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.16), transparent 35%),
+        linear-gradient(180deg, #8a9097 0%, #5b636b 45%, #353b41 100%);
+    border-radius: 110px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #666;
+    border: 3px solid rgba(182, 192, 203, 0.55);
     box-shadow: 
-        inset 0 0 8px rgba(0, 0, 0, 0.8),
-        0 2px 4px rgba(0, 0, 0, 0.3);
+        inset 0 12px 18px rgba(255, 255, 255, 0.08),
+        inset 0 -16px 22px rgba(0, 0, 0, 0.35),
+        0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Keyway slot */
 .keyway {
-    width: 240px !important;
-    height: 16px !important;
-    background: linear-gradient(90deg, #222, #333, #222);
-    border-radius: 0 0 8px 8px;
+    width: min(74%, 320px) !important;
+    height: clamp(18px, 2.2vh, 22px) !important;
+    background: linear-gradient(90deg, #121518, #232931 45%, #121518);
+    border-radius: 0 0 12px 12px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    border: 2px solid #444;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(62, 71, 80, 0.9);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.7),
+        0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Pin chambers container */
@@ -321,12 +352,12 @@ body {
     display: flex;
     justify-content: space-around;
     align-items: flex-start;
-    padding: 0 15px;
+    padding: 0 28px;
 }
 
 /* Individual pin chamber */
 .pin-chamber {
-    width: 32px !important;
+    width: 46px !important;
     height: 100%;
     position: relative;
     display: flex;
@@ -336,27 +367,29 @@ body {
 
 /* Chamber tube */
 .chamber-tube {
-    width: 22px !important;
+    width: 30px !important;
     height: 100%;
-    background: linear-gradient(180deg, #2a2a2a 0%, #222 100%);
-    border: 2px solid #444;
-    border-radius: 0 0 12px 12px;
+    background: linear-gradient(180deg, #434b54 0%, #1d2329 100%);
+    border: 2px solid rgba(97, 108, 120, 0.85);
+    border-radius: 0 0 16px 16px;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.7);
+    box-shadow:
+        inset 0 0 10px rgba(0, 0, 0, 0.7),
+        inset 0 10px 8px rgba(255, 255, 255, 0.04);
 }
 
 /* Driver pin (top pin) */
 .driver-pin {
     width: 100%;
     height: 40px;
-    background: linear-gradient(180deg, #666 0%, #555 100%);
-    border-radius: 0 0 12px 12px;
+    background: linear-gradient(180deg, #c8d0d7 0%, #7f8a95 100%);
+    border-radius: 0 0 14px 14px;
     position: absolute;
     top: 0;
     left: 0;
-    transition: height 0.1s ease;
-    border-bottom: 2px solid #777;
+    transition: height 0.18s ease;
+    border-bottom: 2px solid rgba(228, 235, 241, 0.35);
     box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.5);
 }
 
@@ -364,13 +397,13 @@ body {
 .key-pin {
     width: 100%;
     height: 60px;
-    background: linear-gradient(180deg, #888 0%, #777 100%);
-    border-radius: 12px 12px 0 0;
+    background: linear-gradient(180deg, #dde3e8 0%, #8c969f 100%);
+    border-radius: 14px 14px 0 0;
     position: absolute;
     bottom: 0;
     left: 0;
-    transition: height 0.1s ease;
-    border-top: 2px solid #999;
+    transition: height 0.18s ease;
+    border-top: 2px solid rgba(243, 247, 250, 0.35);
     box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.1);
 }
 
@@ -378,7 +411,7 @@ body {
 .pin-spring {
     width: 100%;
     height: 40px;
-    background: linear-gradient(180deg, #444 0%, #333 100%);
+    background: linear-gradient(180deg, #46505a 0%, #2b3138 100%);
     position: absolute;
     top: 40px;
     left: 0;
@@ -389,24 +422,24 @@ body {
 }
 
 .spring-coil-vertical {
-    width: 10px;
+    width: 12px;
     height: 3px;
-    background: linear-gradient(90deg, #555, #666, #555);
+    background: linear-gradient(90deg, #89939d, #d1d8de, #89939d);
     border-radius: 2px;
     margin: 1px 0;
 }
 
 /* Lockpick visualization */
 .lockpick-tool {
-    width: 260px !important;
-    height: 25px !important;
-    background: linear-gradient(90deg, #888 0%, #aaa 50%, #888 100%);
+    width: min(80%, 360px) !important;
+    height: clamp(20px, 2.6vh, 26px) !important;
+    background: linear-gradient(90deg, #7b858f 0%, #d5dde4 50%, #7b858f 100%);
     border-radius: 4px;
     position: absolute;
-    bottom: -35px;
+    bottom: -40px;
     transform-origin: left center;
     transition: transform 0.1s linear;
-    border: 1px solid #666;
+    border: 1px solid rgba(97, 108, 118, 0.95);
     box-shadow: 
         0 2px 8px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -415,9 +448,9 @@ body {
 
 /* Tension wrench */
 .tension-wrench {
-    width: 50px;
-    height: 12px;
-    background: linear-gradient(90deg, #666 0%, #777 100%);
+    width: 64px;
+    height: 14px;
+    background: linear-gradient(90deg, #6f7984 0%, #c0c9d2 100%);
     position: absolute;
     right: 15px;
     top: 50%;
@@ -432,13 +465,13 @@ body {
 /* Pin labels */
 .pin-label {
     position: absolute;
-    top: -20px;
+    top: -30px;
     left: 50%;
     transform: translateX(-50%);
-    color: #fff;
+    color: #f4e6c6;
     font-family: 'Digital', sans-serif;
-    font-size: 0.9rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 1rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* Unlocked state */
@@ -481,25 +514,29 @@ body {
 /* Lockpick position indicator */
 .lockpick-position-indicator {
     position: absolute;
-    bottom: 8px;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
-    width: 240px !important;
-    height: 25px !important;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    border: 1px solid #444;
+    width: min(70%, 320px) !important;
+    height: clamp(22px, 2.8vh, 28px) !important;
+    background: rgba(21, 25, 29, 0.82);
+    border-radius: 999px;
+    border: 1px solid rgba(116, 127, 139, 0.72);
     overflow: hidden;
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.65),
+        0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
 .position-slider {
     width: 40px !important;
     height: 100%;
-    background: linear-gradient(90deg, #fff, #ccc);
+    background: linear-gradient(90deg, #eef2f5, #b7c1cb);
     position: absolute;
     left: 0;
-    border-radius: 3px;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    transform: translateX(-50%);
+    border-radius: 999px;
+    box-shadow: 0 0 10px rgba(223, 232, 239, 0.45);
     transition: left 0.05s linear;
 }
 
@@ -507,9 +544,9 @@ body {
 .target-zone {
     position: absolute;
     height: 100%;
-    background: rgba(76, 175, 80, 0.3);
-    border-left: 2px solid #4caf50;
-    border-right: 2px solid #4caf50;
+    background: rgba(151, 195, 120, 0.28);
+    border-left: 2px solid #9ecf78;
+    border-right: 2px solid #9ecf78;
 }
 
 /* Success flash effect */
@@ -580,13 +617,7 @@ body {
 /* ============================================ */
 
 .lockpicks-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    width: 100%;
-    height: 80px;
-    margin-top: 10px;
-    opacity: 0.7;
+    display: none;
 }
 
 .lockpick-track {
@@ -706,8 +737,9 @@ body {
 .game-info {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    gap: 15px;
-    margin-top: 10px;
+    gap: 12px;
+    margin-top: 4px;
+    align-items: stretch;
 }
 
 .game-status {
@@ -727,6 +759,10 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.05),
         inset 0 -1px 0 rgba(0, 0, 0, 0.8),
         0 4px 12px rgba(0, 0, 0, 0.2);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .status-card h3 {
@@ -742,6 +778,10 @@ body {
     font-size: 2rem;
     color: #fff;
     font-weight: bold;
+    min-height: 2.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Controls section */
@@ -749,6 +789,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    height: 100%;
 }
 
 .instructions {
@@ -761,6 +802,10 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.05),
         inset 0 -1px 0 rgba(0, 0, 0, 0.8),
         0 4px 12px rgba(0, 0, 0, 0.2);
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .instructions h3 {
@@ -882,9 +927,9 @@ body {
 
 @keyframes pickJiggle {
     0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(1deg); }
+    25% { transform: rotate(0.7deg); }
     50% { transform: rotate(0deg); }
-    75% { transform: rotate(-1deg); }
+    75% { transform: rotate(-0.7deg); }
 }
 
 .picking-active .lockpick-tool {
@@ -910,47 +955,53 @@ body {
     animation: pinBounce 0.5s ease 3;
 }
 
+@keyframes lockFailureShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(4px); }
+}
+
+.lock-body.failure-feedback {
+    animation: lockFailureShake 0.35s ease;
+}
+
 /* ============================================ */
 /* RESPONSIVE DESIGN */
 /* ============================================ */
 
 @media (max-width: 1000px) {
     .lock-body {
-        width: 350px !important;
-        height: 210px !important;
+        height: 320px !important;
     }
     
     .lock-cylinder {
-        width: 260px !important;
-        height: 120px !important;
-        border-radius: 60px;
+        height: 170px !important;
     }
     
     .keyway {
-        width: 200px !important;
-        height: 14px !important;
+        height: 22px !important;
     }
     
     .pin-chamber {
-        width: 28px !important;
+        width: 40px !important;
     }
     
     .chamber-tube {
-        width: 18px !important;
+        width: 26px !important;
     }
     
     .lockpick-tool {
-        width: 220px !important;
-        height: 20px !important;
+        height: 24px !important;
     }
     
     .lockpick-position-indicator {
-        width: 200px !important;
-        height: 20px !important;
+        height: 26px !important;
     }
     
     .position-slider {
-        width: 35px !important;
+        width: 40px !important;
     }
     
     .door-image-container {
@@ -965,37 +1016,32 @@ body {
     }
     
     .lock-body {
-        width: 300px !important;
-        height: 180px !important;
+        height: 280px !important;
     }
     
     .lock-cylinder {
-        width: 220px !important;
-        height: 100px !important;
-        border-radius: 50px;
+        height: 150px !important;
     }
     
     .keyway {
-        width: 180px !important;
-        height: 12px !important;
+        height: 18px !important;
     }
     
     .pin-chamber {
-        width: 24px !important;
+        width: 34px !important;
     }
     
     .chamber-tube {
-        width: 16px !important;
+        width: 22px !important;
     }
     
     .lockpick-tool {
-        width: 180px !important;
-        height: 20px !important;
+        height: 21px !important;
+        bottom: -38px;
     }
     
     .lockpick-position-indicator {
-        width: 180px !important;
-        height: 20px !important;
+        height: 24px !important;
     }
     
     .sticky-note {
@@ -1034,37 +1080,32 @@ body {
 
 @media (max-width: 768px) {
     .lock-body {
-        width: 280px !important;
-        height: 168px !important;
+        height: 250px !important;
     }
     
     .lock-cylinder {
-        width: 200px !important;
-        height: 90px !important;
-        border-radius: 45px;
+        height: 132px !important;
     }
     
     .keyway {
-        width: 160px !important;
-        height: 10px !important;
+        height: 16px !important;
     }
     
     .pin-chamber {
-        width: 22px !important;
+        width: 28px !important;
     }
     
     .chamber-tube {
-        width: 14px !important;
+        width: 18px !important;
     }
     
     .lockpick-tool {
-        width: 160px !important;
-        height: 18px !important;
+        height: 19px !important;
+        bottom: -34px;
     }
     
     .lockpick-position-indicator {
-        width: 160px !important;
-        height: 18px !important;
+        height: 22px !important;
     }
     
     .door-image-container {
@@ -1083,37 +1124,33 @@ body {
     }
     
     .lock-body {
-        width: 240px !important;
-        height: 144px !important;
+        height: 220px !important;
+        border-radius: 14px;
     }
     
     .lock-cylinder {
-        width: 180px !important;
-        height: 80px !important;
-        border-radius: 40px;
+        height: 116px !important;
     }
     
     .keyway {
-        width: 140px !important;
-        height: 8px !important;
+        height: 14px !important;
     }
     
     .pin-chamber {
-        width: 20px !important;
+        width: 24px !important;
     }
     
     .chamber-tube {
-        width: 12px !important;
+        width: 16px !important;
     }
     
     .lockpick-tool {
-        width: 140px !important;
         height: 16px !important;
+        bottom: -30px;
     }
     
     .lockpick-position-indicator {
-        width: 140px !important;
-        height: 16px !important;
+        height: 18px !important;
     }
     
     .sticky-note {

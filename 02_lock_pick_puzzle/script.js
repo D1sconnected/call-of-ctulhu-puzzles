@@ -57,7 +57,7 @@ function initGame() {
         console.log('Event listeners set up');
         
         // Update UI with initial values
-        currentBarrelEl.textContent = gameState.currentBarrel;
+        currentBarrelEl.textContent = gameState.currentPin;
         lockpicksCount.textContent = gameState.lockpicks;
         
         // Focus the game container for keyboard input
@@ -67,7 +67,7 @@ function initGame() {
         
     } catch (error) {
         console.error('Error initializing game:', error);
-        alert('Error initializing game. Check console for details.');
+        alert('Не удалось инициализировать игру. Подробности в консоли.');
     }
 }
 
@@ -330,7 +330,7 @@ function createRealisticLock() {
         
         const statusLabel = document.createElement('div');
         statusLabel.className = 'status-label';
-        statusLabel.textContent = `ЯЧЕЙКА ${i}`;
+        statusLabel.textContent = `ПИН ${i}`;
         
         pinStatus.appendChild(statusLight);
         pinStatus.appendChild(statusLabel);
@@ -557,13 +557,13 @@ function moveLockpick() {
 function updateLockpickVisualPosition() {
     const positionSlider = document.getElementById('positionSlider');
     const lockpickTool = document.getElementById('lockpickTool');
+    const positionIndicator = document.getElementById('positionIndicator');
     
-    if (!positionSlider || !lockpickTool) return;
+    if (!positionSlider || !lockpickTool || !positionIndicator) return;
     
-    // UPDATED: Calculate pixel position based on new indicator width (240px)
-    const sliderWidth = 240; // Changed from 180px
+    const sliderWidth = positionIndicator.clientWidth;
     const sliderPosition = (gameState.lockpickPosition / 100) * sliderWidth;
-    positionSlider.style.left = `${sliderPosition - 20}px`; // Center the slider (40px wide)
+    positionSlider.style.left = `${sliderPosition}px`;
     
     // Update lockpick tool angle (simulating picking action)
     const angle = (gameState.lockpickPosition - 50) / 50 * 15; // ±15 degrees
@@ -577,13 +577,13 @@ function updateLockpickVisualPosition() {
 // Update target zone position
 function updateTargetZonePosition() {
     const targetZone = document.getElementById('targetZone');
-    if (!targetZone) return;
+    const positionIndicator = document.getElementById('positionIndicator');
+    if (!targetZone || !positionIndicator) return;
     
     const pin = gameState.pins[gameState.currentPin - 1];
     if (!pin) return;
     
-    // UPDATED: Calculate pixel position based on new indicator width (240px)
-    const sliderWidth = 240; // Changed from 180px
+    const sliderWidth = positionIndicator.clientWidth;
     const targetPosition = (pin.targetPosition / 100) * sliderWidth;
     const targetZoneHalfWidth = gameState.targetZoneHalfWidth;
     
@@ -623,7 +623,8 @@ function fixLockpick() {
     playSound(soundLockpickFix, 0.4);
     
     // Get ACTUAL pixel positions for accurate detection
-    const sliderWidth = 240; // UPDATED: Changed from 180px to 240px
+    const positionIndicator = document.getElementById('positionIndicator');
+    const sliderWidth = positionIndicator ? positionIndicator.clientWidth : 240;
     const lockpickPixelPosition = (gameState.lockpickPosition / 100) * sliderWidth;
     const targetZonePixelPosition = (pin.targetPosition / 100) * sliderWidth;
     
@@ -687,6 +688,7 @@ function fixLockpick() {
         // Break a lockpick
         gameState.lockpicks--;
         lockpicksCount.textContent = gameState.lockpicks;
+        showFailureShake();
         
         // Play break sound
         playSound(soundLockpickBreak, 0.4);
@@ -719,6 +721,19 @@ function showSuccessFlash() {
             flash.parentNode.removeChild(flash);
         }
     }, 500);
+}
+
+function showFailureShake() {
+    const lockBody = document.querySelector('.lock-body');
+    if (!lockBody) return;
+    
+    lockBody.classList.remove('failure-feedback');
+    void lockBody.offsetWidth;
+    lockBody.classList.add('failure-feedback');
+    
+    setTimeout(() => {
+        lockBody.classList.remove('failure-feedback');
+    }, 450);
 }
 
 // Stop lockpick movement
@@ -758,10 +773,6 @@ function resetAllPins() {
     gameState.currentPin = 1;
     currentBarrelEl.textContent = '1';
     
-    const targetMin = gameState.settings.targetPositionMin;
-    const targetMax = gameState.settings.targetPositionMax;
-    const targetRange = targetMax - targetMin;
-    
     // Reset all pins
     gameState.pins.forEach(pin => {
         pin.isUnlocked = false;
@@ -769,13 +780,6 @@ function resetAllPins() {
         // Update pin element
         pin.pinChamberElement.classList.remove('unlocked', 'current');
         pin.statusLightElement.classList.remove('unlocked', 'current');
-        
-        // Generate new target position for each pin
-        pin.targetPosition = Math.random() * targetRange + targetMin;
-        
-        // Update pin heights
-        pin.driverPinElement.style.height = `${pin.targetPosition}%`;
-        pin.keyPinElement.style.height = `${100 - pin.targetPosition}%`;
     });
     
     // Update current pin visual
